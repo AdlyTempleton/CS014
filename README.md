@@ -1,2 +1,3 @@
-# CS014
-Williams college creating a rougelike game winter study class
+# Weed Strike Roguelike
+
+Weed Strike is a simple roguelike game for teaching/demonstration purposes.
