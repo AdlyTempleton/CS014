@@ -1,4 +1,4 @@
-# Design Doc for Weed Strike
+# Design Doc for Wandering Bard
 
 ### Goals
 
@@ -16,8 +16,6 @@ Weed Strike is a fairly standard, simple roguelike. As such, the player gets
 
 ### Story
 
-The story is a typical zombie-apocalypse type story. The player controls one of the last human survivors of the zombie apocalypse. However, the traditional zombie survivor strategy is subverted when the player discovers that they can train defeated zombies to act as semi-autonomous units working towards their goals. The player initially amasses a small army of trained zombies. However, they quickly encounter other survivors with potentially unsavory motives.
+You are a bard in a D&D party. Like all bards, you have always been happy to take a supporting role and hide behind the strength of the other party members. That is, until a snowstorm seperated you from the rest of the party. You must quickly learn to use your mismatched build, your grab bag of skills and your raw bardic charm to survive independently and rejoin the party.
 
 ### Mechanics
-
-Loose zombies are roaming around on the map. The player can defeat some of them in a (fairly simple) combat system. Upon defeating them, the player can assign these zombies to various tasks. Trained zombies will roam around the map independent of the player.

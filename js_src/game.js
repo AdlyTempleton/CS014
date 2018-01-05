@@ -1,6 +1,7 @@
 
 import * as u from './util.js';
 import ROT from 'rot-js';
+import * as modes from './mode.js'
 
 export let Game = {
 
@@ -25,6 +26,29 @@ export let Game = {
       width: this.display.main.w,
       height: this.display.main.h,
       spacing: this.display.SPACING});
+
+    this.setupModes();
+    this.switchModes('startup')
+  },
+
+  switchModes: function(newModeName){
+
+    if(this.curMode){
+      this.curMode.exit();
+    }
+    this.curMode = this.modes[newModeName]
+
+    if(this.curMode){
+      this.curMode.enter();
+    }
+  },
+
+  setupModes: function(){
+    this.modes = {};
+    this.modes.startup = new modes.StartupMode();
+    this.modes.win = new modes.WinMode();
+    this.modes.lose = new modes.LoseMode();
+    this.modes.play = new modes.PlayMode();
   },
 
   getDisplay: function (displayId) {
@@ -39,9 +63,7 @@ export let Game = {
   },
 
   renderMain: function() {
-    let d = this.display.main.o;
-    for (let i = 0; i < 10; i++) {
-      d.drawText(5,i+5,"hello world");
-    }
+    this.curMode.render(this.display.main.o);
+
   }
 };
