@@ -1,7 +1,9 @@
-.ws-display {
+.display {
   padding: 4px;
   background: #000;
   float: left;
+
+  border: 1px solid white;
 }
 
 .dev-outline {
@@ -9,16 +11,18 @@
   background: #500;
 }
 
-#ws-avatar-display {
+#main-display {
+
   padding-top: 8px;
   padding-left: 8px;
 }
 
-#ws-main-display {
+#avatar-display {
+
   padding-top: 8px;
 }
 
-#ws-message-display {
+#log-display {
   clear: both;
   margin-top: -4px;
   padding-left: 8px;

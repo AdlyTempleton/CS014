@@ -13,7 +13,14 @@ window.onload = function() {
   Game.init();
 
   // Add the containers to our HTML page
-  document.getElementById('wbmain').appendChild(Game.getDisplay('main').getContainer());
+  console.dir(Game.getDisplay('main').getContainer());
+  document.getElementById('main-display').appendChild(Game.getDisplay('main').getContainer());
+  document.getElementById('log-display').appendChild(Game.getDisplay('log').getContainer());
+  document.getElementById('avatar-display').appendChild(Game.getDisplay('avatar').getContainer());
 
   Game.render();
+
+  Game.bindEvent("keydown");
+  Game.bindEvent("keyup");
+  Game.bindEvent("keypress");
 };
