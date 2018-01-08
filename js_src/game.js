@@ -3,6 +3,7 @@
   import ROT from 'rot-js';
   import * as modes from './mode.js'
   import * as d from './data.js'
+  import * as map from './map.js'
 
   export let Game = {
 
