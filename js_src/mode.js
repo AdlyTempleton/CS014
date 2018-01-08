@@ -1,4 +1,6 @@
 import Game from './util.js'
+import * as d from './data.js'
+import {MessageHandler} from './msg.js'
 
 class Mode {
 
@@ -23,21 +25,33 @@ class Mode {
 
 export class PlayMode extends Mode {
 
+
+    enter(){
+      super.enter();
+      this.game.isPlaying = true;
+    }
     render(display){
 
       display.clear();
-      display.drawText(2, 2, "Press W to win, press L to lose");
+      display.drawText(2, 2, "Press UP to level up, W to win at level 10, press L to lose");
     }
 
     handleInput(eventType, e){
-      if(eventType == "keyup" && e.keyCode == 87){
-        this.game.switchModes('win')
-        return true;
-      }
-
-      if(eventType == "keyup" && e.keyCode == 76){
-        this.game.switchModes('lose')
-        return true;
+      if(eventType == "keyup"){
+        switch(e.keyCode){
+          case 87:
+            this.game.switchModes('win')
+            return true;
+          case 76:
+            this.game.switchModes('lose')
+            return true;
+          case 27:
+            this.game.switchModes('menu');
+            return true;
+          case 38:
+            this.game.data.level += 1;
+            return true;
+        }
       }
     }
 }
@@ -56,6 +70,60 @@ export class LoseMode extends Mode{
   }
 }
 
+export class MenuMode extends Mode{
+
+  enter() {
+    super.enter();
+    if (window.localStorage.getItem(this.game.SAVE_LOCATION)) {
+      this.hasFile = true;
+    }
+  }
+
+  render(display){
+
+    display.clear();
+    display.drawText(2,2, "Press N to start a new game");
+
+    display.drawText(2,3, "Press ESC to return to play");
+    if(this.game.isPlaying){
+      display.drawText(2,4, "Press S to save your game");
+    }
+    if(this.hasFile){
+      display.drawText(2,5, "Press L to load saved game");
+    }
+  }
+
+  handleInput(eventType, e){
+    if(eventType == "keyup"){
+      switch (e.keyCode) {
+        //ESC
+        case 27:
+          this.game.switchModes('play');
+          return true;
+        //N
+        case 78:
+          this.game.data.clear();
+          this.game.switchModes('play');
+          return true;
+        //S
+        case 83:
+          this.game.data.handleSave(this.game);
+          MessageHandler.send("Game saved");
+          this.game.switchModes('play');
+          return true;
+        //L
+        case 76:
+          this.game.data = d.handleLoad(this.game);
+          MessageHandler.send("Game loaded");
+          this.game.switchModes('play');
+          return true;
+
+      }
+    }
+    return false;
+  }
+}
+
 export class StartupMode extends Mode {
   render(display){
     display.clear();
@@ -65,10 +133,8 @@ export class StartupMode extends Mode {
 
   handleInput(eventType, e){
 
-    console.log(e.event);
-    console.log(e.keyCode);
     if(eventType == "keyup" && e.keyCode == 13){
-      this.game.switchModes('play');
+      this.game.switchModes('menu');
       return true;
     }
   }

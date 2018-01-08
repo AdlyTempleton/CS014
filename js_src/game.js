@@ -2,10 +2,13 @@
   import * as u from './util.js';
   import ROT from 'rot-js';
   import * as modes from './mode.js'
+  import * as d from './data.js'
 
   export let Game = {
 
     msg: MessageHandler,
+    isPlaying: false,
+    SAVE_LOCATION: 'wanderingbard',
     DISPLAY_SPACING: 1.1,
     display: {
       main: {
@@ -26,6 +29,7 @@
   },
 
     init: function() {
+      this.data = new d.Data();
       this._randomSeed = 5 + Math.floor(Math.random()*100000);
       //this._randomSeed = 76250;
       console.log("using random seed "+this._randomSeed);
@@ -67,6 +71,7 @@
       this.modes.win = new modes.WinMode(this);
       this.modes.lose = new modes.LoseMode(this);
       this.modes.play = new modes.PlayMode(this);
+      this.modes.menu = new modes.MenuMode(this);
     },
 
     bindEvent: function(eventType){
@@ -89,14 +94,18 @@
 
     render: function() {
       this.renderMain();
+      this.renderAvatar(this.getDisplay('avatar'));
+      this.renderLog(this.getDisplay('log'))
     },
 
-    renderAvatar: function(){
-      display.drawText(2, 2, "You are a bard")
+    renderAvatar: function(display){
+      display.drawText(2, 2, "You are a bard");
+
+      display.drawText(2, 3, `Level: ${this.data.level}`);
     },
 
-    renderLog: function(){
-      msg.render();
+    renderLog: function(display){
+      this.msg.render();
     },
 
     renderMain: function() {
