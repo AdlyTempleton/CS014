@@ -38,14 +38,27 @@ export class Map{
     this.startLoc = this.getRandomPointInRoom(mapo);
   }
 
+  inBounds(p){
+    return p.x >= 0 && p.x < this.w && p.y >= 0 && p.y < this.h;
+  }
+
   getTile(p){
+    if(!this.inBounds(p)){
+      return TILES.NULL;
+    }
     return this.map[p.x][p.y];
   }
 
-  drawOn(display, offsetX=0, offsetY=0){
-    for(let iw = 0; iw < this.w; iw++){
-      for(let ih = 0; ih < this.h; ih++){
-        this.map[iw][ih].drawOn(display, iw + offsetX, ih + offsetY);
+  drawOn(display, camX, camY){
+    let o = display.getOptions();
+
+    let xStart = camX - Math.round(o.width/2);
+    let yStart = camY - Math.round(o.height/2);
+
+
+    for(let iw = 0; iw < o.width; iw++){
+      for(let ih = 0; ih < o.height; ih++){
+        this.getTile({x: iw + xStart, y:ih + yStart}).drawOn(display, iw, ih);
       }
     }
   }
@@ -60,15 +73,5 @@ export class Map{
     var xLoc = ROT.RNG.getUniformInt(room.getLeft(),room.getRight());
     var yLoc = ROT.RNG.getUniformInt(room.getBottom(),room.getTop());
     return {x: xLoc, y:yLoc}
-  }
-
-  render(){
-    for (var key in this.map) {
-      var parts = key.split(",");
-      var x = parseInt(parts[0]);
-      var y = parseInt(parts[1]);
-      this.display.draw(x, y, this.map[key]);
-    }
-    this.display.draw(playerLocation.x, playerLocation.y, "", "", 'yellow');
   }
 }

@@ -21,4 +21,5 @@ export let TILES = {
   EMPTY: new Tile('EMPTY', new Symbol(' '), true),
   WALLS: new Tile('WALLS', new Symbol('#'), false),
   STAIRS: new Tile('STAIRS', new Symbol('=', '#32CD32'), true),
+  NULL: new Tile('NULL', new Symbol('#'), true)
 }

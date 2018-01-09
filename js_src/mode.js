@@ -35,8 +35,8 @@ export class PlayMode extends Mode {
     render(display){
 
       display.clear();
-      this.game.map.drawOn(display, 0, 0);
-      this.avatarSymbol.drawOn(display,this.game.data.playerLocation.x,this.game.data.playerLocation.y);
+      this.game.map.drawOn(display, this.game.data.playerLocation.x,this.game.data.playerLocation.y);
+      this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
     }
 
     handleInput(eventType, e){
@@ -47,21 +47,18 @@ export class PlayMode extends Mode {
             return true;
         }
       }
-      if(eventType == "keydown"){
 
+      if(eventType == "keydown"){
         //Moving code
         //A map from key codes to coordinates to move
         var moveKeys = {65: {x: -1, y:0}, 87: {x: 0, y:-1}, 68: {x: 1, y:0}, 83: {x: 0, y:1}};
+
         if(e.keyCode in moveKeys){
           var newLoc = {x:this.game.data.playerLocation.x, y:this.game.data.playerLocation.y};
-          
+
           newLoc.x += moveKeys[e.keyCode].x;
           newLoc.y += moveKeys[e.keyCode].y;
-          console.log(this.game.map.isTilePassable(newLoc))
-          console.dir(newLoc);
-          console.dir(this.game.data.playerLocation);
           if(this.game.map.isTilePassable(newLoc)){
-            console.log("Moving");
             this.game.data.playerLocation = newLoc;
             if(this.game.map.getTile(newLoc) == TILES.STAIRS){
               this.game.switchModes('win');
@@ -71,7 +68,8 @@ export class PlayMode extends Mode {
         }
         return true;
       }
-    }
+
+  }
 }
 
 export class WinMode extends Mode{

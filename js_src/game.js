@@ -54,7 +54,7 @@
     },
 
     setupMap: function(){
-        this.map = new Map(80, 24, 'basic');
+        this.map = new Map(500, 500, 'basic');
         this.data.playerLocation = this.map.startLoc;
     },
 
