@@ -14,6 +14,6 @@ export class Tile{
 
 export let TILES = {
   EMPTY: new Tile('EMPTY', new Symbol(' ')),
-  WALLS: new Tile('EMPTY', new Symbol('#')),
-  STAIRS: new Tile('EMPTY', new Symbol('=', '008000')),
+  WALLS: new Tile('WALLS', new Symbol('#')),
+  STAIRS: new Tile('STAIRS', new Symbol('=', '#32CD32')),
 }

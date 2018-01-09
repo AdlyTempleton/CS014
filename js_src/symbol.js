@@ -5,11 +5,11 @@ export class Symbol {
     this.bgColor = bgHexColor;
   }
 
-  getRepresentation: function() {
+  getRepresentation() {
     return '%c{' + this.fgColor + '}%b{' + this.bgColor + '}' + this.char;
   }
 
-  drawOn: function(display, x, y) {
+  drawOn(display, x, y) {
     display.draw(x, y, this.char, this.fgColor, this.bgColor);
   }
 }

@@ -1,12 +1,12 @@
 import Game from './util.js'
 import * as d from './data.js'
 import {MessageHandler} from './msg.js'
+import {Symbol} from './symbol.js'
 
 class Mode {
 
   constructor(g){
     this.game = g;
-    console.log("created " + this.constructor.name);
   }
 
   enter() {
@@ -29,11 +29,13 @@ export class PlayMode extends Mode {
     enter(){
       super.enter();
       this.game.isPlaying = true;
+      this.avatarSymbol = new Symbol('@','#dd4');
     }
     render(display){
 
       display.clear();
-      display.drawText(2, 2, "Press UP to level up, W to win at level 10, press L to lose");
+      this.game.map.drawOn(display, 0, 0);
+      this.avatarSymbol.drawOn(display,this.game.data.playerLocation.x,this.game.data.playerLocation.y);
     }
 
     handleInput(eventType, e){
@@ -48,9 +50,18 @@ export class PlayMode extends Mode {
           case 27:
             this.game.switchModes('menu');
             return true;
-          case 38:
-            this.game.data.level += 1;
+          case 37:
+            this.game.data.playerLocation.x -= 1;
             return true;
+          case 38:
+            this.game.data.playerLocation.y += 1;
+            return true;
+          case 39:
+            this.game.data.playerLocation.x += 1;
+            return true;
+          case 40:
+              this.game.data.playerLocation.y -= 1;
+              return true;
         }
       }
     }

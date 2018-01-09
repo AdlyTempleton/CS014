@@ -3,7 +3,7 @@
   import ROT from 'rot-js';
   import * as modes from './mode.js'
   import * as d from './data.js'
-  import * as map from './map.js'
+  import {Map} from './map.js'
 
   export let Game = {
 
@@ -40,6 +40,7 @@
 
       this.setupDisplays();
       this.setupModes();
+      this.setupMap();
       this.switchModes('startup')
     },
 
@@ -50,12 +51,16 @@
           height: this.display[display_key].h,
           spacing: this.DISPLAY_SPACING});
       }
-      console.dir(this.display);
       this.msg.init(this.getDisplay('log'));
 
     },
+
+    setupMap: function(){
+        this.map = new Map(80, 24, 'basic');
+        this.data.playerLocation = this.map.startLoc;
+    },
+
     switchModes: function(newModeName){
-      console.log("Switching " + newModeName)
       if(this.curMode){
         this.curMode.exit(this);
       }
