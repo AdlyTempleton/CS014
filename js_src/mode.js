@@ -41,26 +41,24 @@ export class PlayMode extends Mode {
     handleInput(eventType, e){
       if(eventType == "keyup"){
         switch(e.keyCode){
-          case 87:
-            this.game.switchModes('win')
-            return true;
-          case 76:
-            this.game.switchModes('lose')
-            return true;
           case 27:
             this.game.switchModes('menu');
             return true;
-          case 37:
+        }
+      }
+      if(eventType == "keydown"){
+        switch(e.keyCode){
+          case 65:
             this.game.data.playerLocation.x -= 1;
             return true;
-          case 38:
-            this.game.data.playerLocation.y += 1;
+          case 87:
+            this.game.data.playerLocation.y -= 1;
             return true;
-          case 39:
+          case 68:
             this.game.data.playerLocation.x += 1;
             return true;
-          case 40:
-              this.game.data.playerLocation.y -= 1;
+          case 83:
+              this.game.data.playerLocation.y += 1;
               return true;
         }
       }

@@ -35,6 +35,7 @@ export class Map{
     mapo.create(f.bind(this));
     let p = this.getRandomPointInRoom(mapo);
     this.map[p.x][p.y] = TILES.STAIRS;
+    this.startLoc = this.getRandomPointInRoom(mapo);
   }
 
   drawOn(display, offsetX=0, offsetY=0){

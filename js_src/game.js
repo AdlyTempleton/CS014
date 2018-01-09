@@ -36,8 +36,6 @@
       console.log("using random seed "+this._randomSeed);
       ROT.RNG.setSeed(this._randomSeed);
 
-      u.utilLogHelloWorld();
-
       this.setupDisplays();
       this.setupModes();
       this.setupMap();
