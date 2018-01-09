@@ -38,12 +38,20 @@ export class Map{
     this.startLoc = this.getRandomPointInRoom(mapo);
   }
 
+  getTile(p){
+    return this.map[p.x][p.y];
+  }
+
   drawOn(display, offsetX=0, offsetY=0){
     for(let iw = 0; iw < this.w; iw++){
       for(let ih = 0; ih < this.h; ih++){
         this.map[iw][ih].drawOn(display, iw + offsetX, ih + offsetY);
       }
     }
+  }
+
+  isTilePassable(p){
+    return this.getTile(p).isPassable();
   }
 
   getRandomPointInRoom(map){

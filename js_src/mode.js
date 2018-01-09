@@ -2,6 +2,7 @@ import Game from './util.js'
 import * as d from './data.js'
 import {MessageHandler} from './msg.js'
 import {Symbol} from './symbol.js'
+import {TILES} from './tile.js'
 
 class Mode {
 
@@ -47,20 +48,28 @@ export class PlayMode extends Mode {
         }
       }
       if(eventType == "keydown"){
-        switch(e.keyCode){
-          case 65:
-            this.game.data.playerLocation.x -= 1;
-            return true;
-          case 87:
-            this.game.data.playerLocation.y -= 1;
-            return true;
-          case 68:
-            this.game.data.playerLocation.x += 1;
-            return true;
-          case 83:
-              this.game.data.playerLocation.y += 1;
-              return true;
+
+        //Moving code
+        //A map from key codes to coordinates to move
+        var moveKeys = {65: {x: -1, y:0}, 87: {x: 0, y:-1}, 68: {x: 1, y:0}, 83: {x: 0, y:1}};
+        if(e.keyCode in moveKeys){
+          var newLoc = {x:this.game.data.playerLocation.x, y:this.game.data.playerLocation.y};
+          
+          newLoc.x += moveKeys[e.keyCode].x;
+          newLoc.y += moveKeys[e.keyCode].y;
+          console.log(this.game.map.isTilePassable(newLoc))
+          console.dir(newLoc);
+          console.dir(this.game.data.playerLocation);
+          if(this.game.map.isTilePassable(newLoc)){
+            console.log("Moving");
+            this.game.data.playerLocation = newLoc;
+            if(this.game.map.getTile(newLoc) == TILES.STAIRS){
+              this.game.switchModes('win');
+            }
+          }
+
         }
+        return true;
       }
     }
 }
