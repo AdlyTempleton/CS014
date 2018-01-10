@@ -1,22 +1,40 @@
 import ROT from 'rot-js';
 import {TILES} from './tile.js'
-import {init2DArray} from './util.js';
+import * as d from './data.js'
+import {init2DArray, randomString} from './util.js';
 
 class Map{
 
   constructor(w, h, type = 'basic'){
-    this.w = w;
-    this.h = h;
-    this.generate(w, h);
+
+    this.attr = {};
+    this.attr.w = w;
+    this.attr.h = h;
+    this.attr.type = type;
+    this.attr.id = this.uid();
   }
 
-  generate(w, h){
+  uid(){
+    'map: ' + randomString() + d.DATA.nextMapId++;
+  }
 
+  getWidth(){return this.attr.w;}
+  getHeight(){return this.attr.w;}
 
+  getId(){return this.attr.id;}
+  setId(id){this.attr.id = id;}
+
+  getType(){return this.attr.type;}
+
+  getSeed(){return this.attr.seed;}
+  setSeed(seed){this.attr.seed = seed;}
+
+  toJSON(){
+    return JSON.stringify(this.attr);
   }
 
   inBounds(p){
-    return p.x >= 0 && p.x < this.w && p.y >= 0 && p.y < this.h;
+    return p.x >= 0 && p.x < this.attr.w && p.y >= 0 && p.y < this.attr.h;
   }
 
   getTile(p){
@@ -51,27 +69,28 @@ class Map{
     var yLoc = ROT.RNG.getUniformInt(room.getBottom(),room.getTop());
     return {x: xLoc, y:yLoc}
   }
+
+  build(){
+    var options = {
+    roomWidth: [8, 15], /* room minimum and maximum width */
+    roomHeight: [8, 15], /* room minimum and maximum height */
+    corridorLength: [10, 20], /* corridor minimum and maximum length */
+    dugPercentage: 0.4, /* we stop after this percentage of level area has been dug out */
+    timeLimit: 10000 /* we stop after this much time has passed (msec) */
+    };
+
+    this.tg = init2DArray(this.getWidth(), this.getHeight());
+    this.o = new ROT.Map.Digger(this.getWidth(), this.getHeight(), options);
+    var f = function(x, y, t){
+      this.tg[x][y] = t ? TILES.WALLS : TILES.EMPTY;
+    };
+    this.o.create(f.bind(this));
+    let p = this.getRandomPointInRoom();
+    this.tg[p.x][p.y] = TILES.STAIRS;
+    this.startLoc = this.getRandomPointInRoom();
+  }
 }
 
 export function mapFactory(w, h){
-  var options = {
-  roomWidth: [8, 15], /* room minimum and maximum width */
-  roomHeight: [8, 15], /* room minimum and maximum height */
-  corridorLength: [10, 20], /* corridor minimum and maximum length */
-  dugPercentage: 0.4, /* we stop after this percentage of level area has been dug out */
-  timeLimit: 10000 /* we stop after this much time has passed (msec) */
-  };
-
-  var map = new Map(w, h);
-  map.tg = init2DArray(w, h);
-  map.o = new ROT.Map.Digger(w, h, options);
-  var f = function(x, y, t){
-    map.tg[x][y] = t ? TILES.WALLS : TILES.EMPTY;
-  };
-  map.o.create(f.bind(map));
-  let p = map.getRandomPointInRoom();
-  map.tg[p.x][p.y] = TILES.STAIRS;
-  map.startLoc = map.getRandomPointInRoom();
-  console.dir(map.startLoc);
-  return map
+  return new Map(w, h)
 }

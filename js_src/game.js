@@ -30,7 +30,10 @@
   },
 
     init: function() {
-      this.data = new d.Data();
+      console.dir(d.DATA);
+      d.DATA.init(this);
+      console.dir(d.DATA.playerLocation);
+
       this._randomSeed = 5 + Math.floor(Math.random()*100000);
       //this._randomSeed = 76250;
       console.log("using random seed "+this._randomSeed);
@@ -54,13 +57,13 @@
 
     setupGame: function(){
       this.setupMap();
-
       this.isPlaying = true;
     },
 
     setupMap: function(){
         this.map = mapFactory(500, 500, 'basic');
-        this.data.playerLocation = this.map.startLoc;
+        this.map.build();
+        d.DATA.playerLocation = this.map.startLoc;
     },
 
     switchModes: function(newModeName){
@@ -110,12 +113,23 @@
     renderAvatar: function(display){
       display.drawText(2, 2, "You are a bard");
 
-      display.drawText(2, 3, `Level: ${this.data.level}`);
+      display.drawText(2, 3, `Level: ${d.DATA.level}`);
     },
 
     renderLog: function(display){
       this.msg.render();
     },
+
+    toJSON: function() {
+     var s = JSON.stringify(this._randomSeed);
+     return s;
+   },
+
+   fromJSON: function(json) {
+     this._randomSeed = JSON.parse(json);
+   },
+
+
 
     renderMain: function() {
       this.curMode.render(this.display.main.o, this);

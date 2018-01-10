@@ -35,7 +35,8 @@ export class PlayMode extends Mode {
     render(display){
 
       display.clear();
-      this.game.map.drawOn(display, this.game.data.playerLocation.x,this.game.data.playerLocation.y);
+      console.dir(d.DATA);
+      this.game.map.drawOn(display, d.DATA.playerLocation.x,d.DATA.playerLocation.y);
       this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
     }
 
@@ -54,12 +55,12 @@ export class PlayMode extends Mode {
         var moveKeys = {65: {x: -1, y:0}, 87: {x: 0, y:-1}, 68: {x: 1, y:0}, 83: {x: 0, y:1}};
 
         if(e.keyCode in moveKeys){
-          var newLoc = {x:this.game.data.playerLocation.x, y:this.game.data.playerLocation.y};
+          var newLoc = {x:d.DATA.playerLocation.x, y:d.DATA.playerLocation.y};
 
           newLoc.x += moveKeys[e.keyCode].x;
           newLoc.y += moveKeys[e.keyCode].y;
           if(this.game.map.isTilePassable(newLoc)){
-            this.game.data.playerLocation = newLoc;
+            d.DATA.playerLocation = newLoc;
             if(this.game.map.getTile(newLoc) == TILES.STAIRS){
               this.game.switchModes('win');
             }
@@ -118,18 +119,18 @@ export class MenuMode extends Mode{
           return true;
         //N
         case 78:
-          this.game.data.clear();
+          d.DATA.clear();
           this.game.switchModes('play');
           return true;
         //S
         case 83:
-          this.game.data.handleSave(this.game);
+          d.DATA.handleSave(this.game);
           MessageHandler.send("Game saved");
           this.game.switchModes('play');
           return true;
         //L
         case 76:
-          this.game.data = d.handleLoad(this.game);
+          d.handleLoad(this.game);
           MessageHandler.send("Game loaded");
           this.game.switchModes('play');
           return true;

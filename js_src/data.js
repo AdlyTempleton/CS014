@@ -1,20 +1,28 @@
 import {MessageHandler} from './msg.js'
-export class Data {
-  constructor(){
-    this.clear();
-  }
-
-  clear(){
+export let DATA = {
+  clear: function(){
     this.level = 0;
     this.playerLocation = {x:0, y:0};
-  }
+    this.nextMapId = 1;
+    this.maps = {};
+  },
 
-  handleSave(game){
+  init: function(game){
+    this.clear();
+    this.game = game;
+  },
+
+  handleSave: function(game){
     if(!localStorageAvailable()){
       return;
     }
     window.localStorage.setItem(game.SAVE_LOCATION,JSON.stringify(this));
   }
+}
+
+
+function handleLoad(game){
+  DATA = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
 }
 
 //Fix copied from weed strike
@@ -30,12 +38,4 @@ function localStorageAvailable() {
     MessageHandler.send('Sorry, no local data storage is available for this browser so game save/load is not possible');
     return false;
   }
-}
-
-
-export function handleLoad(game){
-  if(!localStorageAvailable()){
-    return new d.Data();
-  }
-  return JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
 }
