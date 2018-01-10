@@ -29,14 +29,13 @@ export class PlayMode extends Mode {
 
     enter(){
       super.enter();
-      this.game.setupGame();
       this.avatarSymbol = new Symbol('@','#dd4');
     }
     render(display){
 
       display.clear();
       console.dir(d.DATA);
-      this.game.map.drawOn(display, d.DATA.playerLocation.x,d.DATA.playerLocation.y);
+      d.DATA.currentMap().drawOn(display, d.DATA.playerLocation.x,d.DATA.playerLocation.y);
       this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
     }
 
@@ -59,9 +58,9 @@ export class PlayMode extends Mode {
 
           newLoc.x += moveKeys[e.keyCode].x;
           newLoc.y += moveKeys[e.keyCode].y;
-          if(this.game.map.isTilePassable(newLoc)){
+          if(d.DATA.currentMap().isTilePassable(newLoc)){
             d.DATA.playerLocation = newLoc;
-            if(this.game.map.getTile(newLoc) == TILES.STAIRS){
+            if(d.DATA.currentMap().getTile(newLoc) == TILES.STAIRS){
               this.game.switchModes('win');
             }
           }
@@ -120,6 +119,7 @@ export class MenuMode extends Mode{
         //N
         case 78:
           d.DATA.clear();
+          this.game.setupGame();
           this.game.switchModes('play');
           return true;
         //S

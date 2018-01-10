@@ -1,15 +1,21 @@
 import {MessageHandler} from './msg.js'
+import {mapFactory} from './map.js'
 export let DATA = {
   clear: function(){
     this.level = 0;
     this.playerLocation = {x:0, y:0};
     this.nextMapId = 1;
     this.maps = {};
+    this.currentMapId = '';
   },
 
   init: function(game){
     this.clear();
     this.game = game;
+  },
+
+  currentMap: function(){
+    return this.maps[this.currentMapId];
   },
 
   handleSave: function(game){
@@ -21,8 +27,23 @@ export let DATA = {
 }
 
 
-function handleLoad(game){
-  DATA = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
+export function handleLoad(game){
+  let saved = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
+  DATA.clear();
+
+  game.fromJSON(saved.game);
+
+  this.level = saved.level;
+  this.playerLocation = saved.playerLocation;
+  this.nextMapId = saved.nextMapId;
+
+  console.dir(saved);
+
+
+  for (var mapid in saved.maps){
+    if (!saved.maps.hasOwnProperty(mapid)) continue;
+    DATA[mapid] = mapFactory(saved.maps[mapid]);
+  }
 }
 
 //Fix copied from weed strike

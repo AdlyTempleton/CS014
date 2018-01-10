@@ -30,9 +30,7 @@
   },
 
     init: function() {
-      console.dir(d.DATA);
       d.DATA.init(this);
-      console.dir(d.DATA.playerLocation);
 
       this._randomSeed = 5 + Math.floor(Math.random()*100000);
       //this._randomSeed = 76250;
@@ -61,9 +59,10 @@
     },
 
     setupMap: function(){
-        this.map = mapFactory(500, 500, 'basic');
-        this.map.build();
-        d.DATA.playerLocation = this.map.startLoc;
+        var map = mapFactory({});
+        map.build();
+        d.DATA.currentMapId = map.getId();
+        d.DATA.playerLocation = map.startLoc;
     },
 
     switchModes: function(newModeName){
@@ -121,8 +120,7 @@
     },
 
     toJSON: function() {
-     var s = JSON.stringify(this._randomSeed);
-     return s;
+     return this._randomSeed;
    },
 
    fromJSON: function(json) {

@@ -12,25 +12,36 @@ class Map{
     this.attr.h = h;
     this.attr.type = type;
     this.attr.id = this.uid();
+    this.attr.isBuilt = false;
+    this.attr.seed = ROT.RNG.getState();
   }
 
   uid(){
-    'map: ' + randomString() + d.DATA.nextMapId++;
+    return 'map: ' + randomString() + d.DATA.nextMapId++;
   }
+
+  isBuilt(){return this.isBuilt;}
 
   getWidth(){return this.attr.w;}
   getHeight(){return this.attr.w;}
+  setWidth(w){this.attr.w = w;}
+  setHeight(h){this.attr.h = h;}
 
   getId(){return this.attr.id;}
   setId(id){this.attr.id = id;}
 
   getType(){return this.attr.type;}
+  setType(t){this.attr.type = t;}
 
   getSeed(){return this.attr.seed;}
   setSeed(seed){this.attr.seed = seed;}
 
   toJSON(){
-    return JSON.stringify(this.attr);
+    return this.attr
+  }
+
+  restoreFromState(json){
+    this.attr = JSON.parse(json);
   }
 
   inBounds(p){
@@ -79,6 +90,9 @@ class Map{
     timeLimit: 10000 /* we stop after this much time has passed (msec) */
     };
 
+    var oldSeed = ROT.RNG.getState();
+    ROT.RNG.setState(this.getSeed());
+
     this.tg = init2DArray(this.getWidth(), this.getHeight());
     this.o = new ROT.Map.Digger(this.getWidth(), this.getHeight(), options);
     var f = function(x, y, t){
@@ -86,11 +100,39 @@ class Map{
     };
     this.o.create(f.bind(this));
     let p = this.getRandomPointInRoom();
+    
     this.tg[p.x][p.y] = TILES.STAIRS;
     this.startLoc = this.getRandomPointInRoom();
+
+    this.isBuilt = true;
+    ROT.RNG.setState(oldSeed);
   }
 }
 
-export function mapFactory(w, h){
-  return new Map(w, h)
+export function mapFactory(mapData){
+  let m = new Map(50, 50)
+
+  if(mapData.w){
+    m.setWidth(mapData.w);
+  }
+  if(mapData.h){
+    m.setHeight(mapData.h);
+  }
+  if(mapData.type){
+    m.setType(mapData.type);
+  }
+  if(mapData.id){
+    m.setId(mapData.id)
+  }
+  if(mapData.isBuilt){
+    m.isBuilt = mapData.isBuilt;
+  }
+  if(mapData.seed){
+    m.setSeed(mapData.seed);
+  }
+
+  m.build();
+
+  d.DATA.maps[m.getId()] = m;
+  return m;
 }
