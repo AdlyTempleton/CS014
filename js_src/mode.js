@@ -29,7 +29,7 @@ export class PlayMode extends Mode {
 
     enter(){
       super.enter();
-      this.game.isPlaying = true;
+      this.game.setupGame();
       this.avatarSymbol = new Symbol('@','#dd4');
     }
     render(display){

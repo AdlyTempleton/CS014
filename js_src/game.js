@@ -3,7 +3,7 @@
   import ROT from 'rot-js';
   import * as modes from './mode.js'
   import * as d from './data.js'
-  import {Map} from './map.js'
+  import {mapFactory} from './map.js'
 
   export let Game = {
 
@@ -38,7 +38,6 @@
 
       this.setupDisplays();
       this.setupModes();
-      this.setupMap();
       this.switchModes('startup')
     },
 
@@ -53,8 +52,14 @@
 
     },
 
+    setupGame: function(){
+      this.setupMap();
+
+      this.isPlaying = true;
+    },
+
     setupMap: function(){
-        this.map = new Map(500, 500, 'basic');
+        this.map = mapFactory(500, 500, 'basic');
         this.data.playerLocation = this.map.startLoc;
     },
 

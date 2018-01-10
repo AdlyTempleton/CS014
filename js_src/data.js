@@ -1,12 +1,12 @@
 import {MessageHandler} from './msg.js'
 export class Data {
   constructor(){
-    this.attr = {};
-    this.level = 0;
+    this.clear();
   }
 
   clear(){
     this.level = 0;
+    this.playerLocation = {x:0, y:0};
   }
 
   handleSave(game){
