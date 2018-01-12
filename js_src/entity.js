@@ -9,6 +9,7 @@ export class Entity {
     this.state = {};
     this.state.pos = {x:0, y:0};
     this.id = this.uid();
+    this.map = '';
   }
 
   uid(){
@@ -20,8 +21,25 @@ export class Entity {
   getName(){return this.name;  }
   setName(name){this.name = name;  }
   getPos(){return this.state.pos;}
-  setPos(p){this.state.pos = p;}
+  setPos(p){
+    this.state.pos = p;
+  }
   getId(){return this.id;}
   setId(id){this.id = id;}
+  getMapId(){return this.map;}
+  setMapId(m){this.map = m;}
+  getMap(){return d.DATA.maps[this.map]}
 
+  render(display, x, y){
+    this.symbol.drawOn(display, x, y);
+  }
+
+  moveTo(newPos){
+    this.getMap().moveEntityTo(this.getId(), this.getPos(), newPos);
+    this.setPos(newPos);
+  }
+
+  move(dx, dy){
+    this.moveTo({x: this.getPos().x + dx, y: this.getPos().y + dy});
+  }
 }

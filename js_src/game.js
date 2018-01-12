@@ -4,6 +4,7 @@
   import * as modes from './mode.js'
   import * as d from './data.js'
   import {mapFactory} from './map.js'
+  import {EntityFactory} from './entities.js'
 
   export let Game = {
 
@@ -30,7 +31,6 @@
   },
 
     init: function() {
-      d.DATA.init(this);
 
       this._randomSeed = 5 + Math.floor(Math.random()*100000);
       //this._randomSeed = 76250;
@@ -39,6 +39,7 @@
 
       this.setupDisplays();
       this.setupModes();
+      d.DATA.init(this);
       this.switchModes('startup')
     },
 
@@ -55,6 +56,11 @@
 
     setupGame: function(){
       this.setupMap();
+
+      this.modes.play.avatar = EntityFactory.create('avatar');
+      d.DATA.currentMap().addEntityAtRandomPos(this.modes.play.avatar);
+      d.DATA.cameraLocation = this.modes.play.avatar.getPos();
+
       this.isPlaying = true;
     },
 
@@ -62,7 +68,6 @@
         var map = mapFactory({});
         map.build();
         d.DATA.currentMapId = map.getId();
-        d.DATA.playerLocation = map.startLoc;
     },
 
     switchModes: function(newModeName){

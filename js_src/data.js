@@ -3,7 +3,7 @@ import {mapFactory} from './map.js'
 export let DATA = {
   clear: function(){
     this.level = 0;
-    this.playerLocation = {x:0, y:0};
+    this.cameraLocation = {x:0, y:0};
     this.nextMapId = 1;
     this.nextEntityId = 1;
     this.maps = {};
@@ -37,7 +37,7 @@ export function handleLoad(game){
   game.fromJSON(saved.game);
 
   DATA.level = saved.level;
-  DATA.playerLocation = saved.playerLocation;
+  DATA.cameraLocation = saved.cameraLocation;
   DATA.nextMapId = saved.nextMapId;
   DATA.currentMapId = saved.currentMapId;
   DATA.nextEntityId = saved.nextEntityId;

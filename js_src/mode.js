@@ -27,18 +27,14 @@ class Mode {
 
 export class PlayMode extends Mode {
 
-
     enter(){
       super.enter();
-      this.avatarSymbol = new Symbol('@','#dd4');
-
-      this.avatar = EntityFactory.create('avatar');
     }
     render(display){
 
       display.clear();
-      d.DATA.currentMap().drawOn(display, d.DATA.playerLocation.x,d.DATA.playerLocation.y);
-      this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
+      d.DATA.currentMap().drawOn(display, d.DATA.cameraLocation.x,d.DATA.cameraLocation.y);
+      //this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
     }
 
     handleInput(eventType, e){
@@ -56,12 +52,15 @@ export class PlayMode extends Mode {
         var moveKeys = {65: {x: -1, y:0}, 87: {x: 0, y:-1}, 68: {x: 1, y:0}, 83: {x: 0, y:1}};
 
         if(e.keyCode in moveKeys){
-          var newLoc = {x:d.DATA.playerLocation.x, y:d.DATA.playerLocation.y};
-
+          var newLoc = {x: this.avatar.getPos().x, y: this.avatar.getPos().y};
           newLoc.x += moveKeys[e.keyCode].x;
           newLoc.y += moveKeys[e.keyCode].y;
+
           if(d.DATA.currentMap().isTilePassable(newLoc)){
-            d.DATA.playerLocation = newLoc;
+            //d.DATA.cameraLocation = newLoc;
+
+            this.avatar.moveTo(newLoc);
+            d.DATA.cameraLocation = this.avatar.getPos();
             if(d.DATA.currentMap().getTile(newLoc) == TILES.STAIRS){
               this.game.switchModes('win');
             }

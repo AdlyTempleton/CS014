@@ -14,6 +14,8 @@ class Map{
     this.attr.id = this.uid();
     this.attr.isBuilt = false;
     this.attr.seed = ROT.RNG.getState();
+    this.attr.entityIdToMapPos = {};
+    this.attr.mapPosToEntityId = {}
   }
 
   uid(){
@@ -35,6 +37,44 @@ class Map{
 
   getSeed(){return this.attr.seed;}
   setSeed(seed){this.attr.seed = seed;}
+
+  //Entity mapping codes
+
+  getEntityAt(pos){
+    return this.attr.mapPosToEntityId[pos.x + ',' + pos.y];
+  }
+
+  setEntityAt(entityid, pos){
+    this.attr.mapPosToEntityId[pos.x + ',' + pos.y] = entityid;
+  }
+
+  deleteEntityAt(pos){
+    console.log(pos.x + ',' + pos.y);
+    delete this.attr.mapPosToEntityId[pos.x + ',' + pos.y];
+  }
+
+  moveEntityTo(entityid, oldPos, newPos){
+    console.log(JSON.stringify(this.attr.mapPosToEntityId));
+    this.deleteEntityAt(oldPos);
+    this.setEntityAt(entityid, newPos);
+    this.attr.entityIdToMapPos[entityid] = newPos;
+
+    console.log(JSON.stringify(this.attr.mapPosToEntityId));
+  }
+
+  addEntityAt(entity, pos){
+    console.log('call');
+    console.dir(this);
+    this.attr.entityIdToMapPos[entity.getId()] = pos;
+    this.setEntityAt(entity.getId(), pos);
+    entity.setMapId(this.getId())
+    entity.setPos(pos)
+    console.dir(this);
+  }
+
+  addEntityAtRandomPos(entity){
+    this.addEntityAt(entity, this.getRandomPointInRoom());
+  }
 
   toJSON(){
     return this.attr
@@ -64,7 +104,12 @@ class Map{
 
     for(let iw = 0; iw < o.width; iw++){
       for(let ih = 0; ih < o.height; ih++){
-        this.getTile({x: iw + xStart, y:ih + yStart}).drawOn(display, iw, ih);
+        let pos = {x: iw + xStart, y:ih + yStart};
+        if(this.getEntityAt(pos)){
+          d.DATA.entities[this.getEntityAt(pos)].render(display, iw, ih);
+        }else{
+          this.getTile(pos).drawOn(display, iw, ih);
+        }
       }
     }
   }
@@ -100,9 +145,8 @@ class Map{
     };
     this.o.create(f.bind(this));
     let p = this.getRandomPointInRoom();
-    
+
     this.tg[p.x][p.y] = TILES.STAIRS;
-    this.startLoc = this.getRandomPointInRoom();
 
     this.isBuilt = true;
     ROT.RNG.setState(oldSeed);
