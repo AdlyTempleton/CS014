@@ -5,6 +5,7 @@ export let DATA = {
     this.level = 0;
     this.playerLocation = {x:0, y:0};
     this.nextMapId = 1;
+    this.nextEntityId = 1;
     this.maps = {};
     this.currentMapId = '';
   },
@@ -29,15 +30,16 @@ export let DATA = {
 
 export function handleLoad(game){
   let saved = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
+
   DATA.clear();
 
   game.fromJSON(saved.game);
 
-  this.level = saved.level;
-  this.playerLocation = saved.playerLocation;
-  this.nextMapId = saved.nextMapId;
-
-  console.dir(saved);
+  DATA.level = saved.level;
+  DATA.playerLocation = saved.playerLocation;
+  DATA.nextMapId = saved.nextMapId;
+  DATA.currentMapId = saved.currentMapId;
+  DATA.nextEntityId = saved.nextEntityId;
 
 
   for (var mapid in saved.maps){

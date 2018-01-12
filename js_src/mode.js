@@ -34,7 +34,6 @@ export class PlayMode extends Mode {
     render(display){
 
       display.clear();
-      console.dir(d.DATA);
       d.DATA.currentMap().drawOn(display, d.DATA.playerLocation.x,d.DATA.playerLocation.y);
       this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
     }

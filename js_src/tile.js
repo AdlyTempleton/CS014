@@ -2,10 +2,10 @@ import {Symbol} from './symbol.js'
 
 export class Tile{
 
-  constructor(name, symbol, passable){
-    this.name = name;
-    this.passable = passable;
-    this.symbol = symbol;
+  constructor(template){
+    this.name = template.name || ' ';
+    this.passable = template.passable || false;
+    this.symbol = template.symbol || new Symbol(' ');
   }
 
   drawOn(display, x, y){
@@ -18,8 +18,8 @@ export class Tile{
 }
 
 export let TILES = {
-  EMPTY: new Tile('EMPTY', new Symbol(' '), true),
-  WALLS: new Tile('WALLS', new Symbol('#'), false),
-  STAIRS: new Tile('STAIRS', new Symbol('=', '#32CD32'), true),
-  NULL: new Tile('NULL', new Symbol('#'), true)
+  EMPTY: new Tile({name: 'EMPTY', symbol: new Symbol(' '), passable: true}),
+  WALLS: new Tile({name: 'WALLS', symbol: new Symbol('#'), passable: false}),
+  STAIRS: new Tile({name: 'STAIRS', symbol: new Symbol('=', '#32CD32'), passable: true}),
+  NULL: new Tile({name: 'NULL', symbol: new Symbol('#'), passable: true})
 }
