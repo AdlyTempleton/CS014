@@ -3,7 +3,7 @@ import * as d from './data.js'
 import {MessageHandler} from './msg.js'
 import {Symbol} from './symbol.js'
 import {TILES} from './tile.js'
-import {Entity} from './entity.js'
+import {EntityFactory} from './entities.js'
 
 class Mode {
 
@@ -32,7 +32,7 @@ export class PlayMode extends Mode {
       super.enter();
       this.avatarSymbol = new Symbol('@','#dd4');
 
-      this.avatar = new Entity({symbol: this.avatarSymbol, name:'avatar'})
+      this.avatar = EntityFactory.create('avatar');
     }
     render(display){
 

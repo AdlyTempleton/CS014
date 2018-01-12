@@ -7,6 +7,7 @@ export let DATA = {
     this.nextMapId = 1;
     this.nextEntityId = 1;
     this.maps = {};
+    this.entities = {};
     this.currentMapId = '';
   },
 
