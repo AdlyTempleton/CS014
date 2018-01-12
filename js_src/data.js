@@ -1,5 +1,7 @@
 import {MessageHandler} from './msg.js'
 import {mapFactory} from './map.js'
+import {Entity} from './entity.js'
+import {EntityFactory} from './entities.js'
 export let DATA = {
   clear: function(){
     this.level = 0;
@@ -24,6 +26,11 @@ export let DATA = {
     if(!localStorageAvailable()){
       return;
     }
+
+
+    this.temp = {};
+    this.temp.avatarId = this.game.modes.play.avatar.getId();
+
     window.localStorage.setItem(game.SAVE_LOCATION,JSON.stringify(this));
   }
 }
@@ -33,6 +40,7 @@ export function handleLoad(game){
   let saved = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
 
   DATA.clear();
+  DATA.game = game;
 
   game.fromJSON(saved.game);
 
@@ -47,6 +55,17 @@ export function handleLoad(game){
     if (!saved.maps.hasOwnProperty(mapid)) continue;
     DATA[mapid] = mapFactory(saved.maps[mapid]);
   }
+
+  for(var entityId in saved.entities){
+    var entity = EntityFactory.create(saved.entities[entityId].templateName);
+    entity.state = saved.entities[entityId].state;
+    DATA.entities[entityId] = entity;
+
+    //Readd to the map;
+    entity.getMap().addEntityAt(entity, entity.getPos());
+  }
+
+  DATA.game.modes.play.avatar = DATA.entities[saved.temp.avatarId];
 }
 
 //Fix copied from weed strike

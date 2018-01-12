@@ -4,12 +4,14 @@ import {randomString} from './util.js'
 
 export class Entity {
   constructor(template){
+    this.template = template;
     this.symbol = template.symbol || new Symbol(' ');
     this.name = template.name || ' ';
+    this.templateName = template.templateName ? template.templateName : this.name;
     this.state = {};
     this.state.pos = {x:0, y:0};
-    this.id = this.uid();
-    this.map = '';
+    this.state.id = this.uid();
+    this.state.map = '';
   }
 
   uid(){
@@ -24,11 +26,11 @@ export class Entity {
   setPos(p){
     this.state.pos = p;
   }
-  getId(){return this.id;}
-  setId(id){this.id = id;}
-  getMapId(){return this.map;}
-  setMapId(m){this.map = m;}
-  getMap(){return d.DATA.maps[this.map]}
+  getId(){return this.state.id;}
+  setId(id){this.state.id = id;}
+  getMapId(){return this.state.map;}
+  setMapId(m){this.state.map = m;}
+  getMap(){return d.DATA.maps[this.getMapId()]}
 
   render(display, x, y){
     this.symbol.drawOn(display, x, y);
