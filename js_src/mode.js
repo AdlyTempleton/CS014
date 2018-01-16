@@ -71,11 +71,11 @@ export class PlayMode extends Mode {
 
             this.avatar.moveTo(newLoc);
             d.DATA.cameraLocation = this.avatar.getPos();
+            this.avatar.addTime();
             if(d.DATA.currentMap().getTile(newLoc) == TILES.STAIRS){
               this.game.switchModes('win');
             }
           }
-
         }
         return true;
       }

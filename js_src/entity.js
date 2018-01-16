@@ -2,13 +2,12 @@ import {Symbol} from './symbol.js'
 import * as d from './data.js'
 import {randomString} from './util.js'
 
-export class Entity {
+export class Entity extends Mixable {
   constructor(template){
+    super(template);
     this.template = template;
     this.symbol = template.symbol || new Symbol(' ');
-    this.name = template.name || ' ';
-    this.templateName = template.templateName ? template.templateName : this.name;
-    this.state = {};
+
     this.state.pos = {x:0, y:0};
     this.state.id = this.uid();
     this.state.map = '';
