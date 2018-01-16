@@ -1,6 +1,8 @@
 import ROT from "rot-js";
 import { TILES } from "./tile.js";
 import * as d from "./data.js";
+
+import { EntityFactory } from "./entities.js";
 import { init2DArray, randomString } from "./util.js";
 
 class Map {
@@ -83,6 +85,15 @@ class Map {
     this.attr.entityIdToMapPos[entityid] = newPos;
   }
 
+  getAllEntities() {
+    var r = [];
+    for (var eid in this.attr.entityIdToMapPos) {
+      r.push(d.DATA.entities[eid]);
+    }
+
+    return r;
+  }
+
   addEntityAt(entity, pos) {
     this.attr.entityIdToMapPos[entity.getId()] = pos;
     this.setEntityAt(entity.getId(), pos);
@@ -141,6 +152,12 @@ class Map {
     var xLoc = ROT.RNG.getUniformInt(room.getLeft(), room.getRight());
     var yLoc = ROT.RNG.getUniformInt(room.getBottom(), room.getTop());
     return { x: xLoc, y: yLoc };
+  }
+
+  populate() {
+    for (var i = 0; i < 3; i++) {
+      this.addEntityAtRandomPos(EntityFactory.create("traveler"));
+    }
   }
 
   build() {

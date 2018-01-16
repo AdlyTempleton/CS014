@@ -38,6 +38,16 @@ export class PlayMode extends Mode {
     //this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
   }
 
+  takeTurns() {
+    var entities = d.DATA.currentMap().getAllEntities();
+    for (let ei = 0; ei < entities.length; ei++) {
+      let entity = entities[ei];
+      if (entity.hasOwnProperty("takeTurn")) {
+        entity.takeTurn({ avatar: this.avatar });
+      }
+    }
+  }
+
   renderAvatar(display) {
     display.drawText(2, 2, "Class: Bard");
     display.drawText(2, 4, `Time: ${this.avatar.getTime()}`);
@@ -75,6 +85,8 @@ export class PlayMode extends Mode {
 
       if (e.keyCode in moveKeys) {
         this.avatar.tryMove(moveKeys[e.keyCode].x, moveKeys[e.keyCode].y);
+
+        this.takeTurns();
         if (d.DATA.currentMap().getTile(this.avatar.getPos()) == TILES.STAIRS) {
           this.game.switchModes("win");
         }

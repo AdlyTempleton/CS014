@@ -35,10 +35,26 @@ export let CorporealMover = {
         //d.DATA.cameraLocation = newLoc;
 
         this.moveTo(newLoc);
-        d.DATA.cameraLocation = this.getPos();
 
         this.raiseMixinEvent("postMove", {});
       }
+    }
+  }
+};
+
+export let Wander = {
+  META: { mixinName: "AIWander", mixinGroup: "AI" },
+  METHODS: {
+    takeTurn(turnData) {
+      var moves = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+      ];
+
+      var move = moves.random();
+      this.tryMove(move.x, move.y);
     }
   }
 };
@@ -101,6 +117,18 @@ export let HitPoints = {
     killed: function(evtData) {
       // console.log(this.getName()+' killed');
       this.destroy();
+    }
+  }
+};
+
+export let AvatarMixin = {
+  META: {
+    mixinName: "AvatarMisc",
+    mixingGroupName: "Misc"
+  },
+  LISTENERS: {
+    postMove: function() {
+      d.DATA.cameraLocation = this.getPos();
     }
   }
 };
