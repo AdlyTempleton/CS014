@@ -1,6 +1,7 @@
 import {Symbol} from './symbol.js'
 import * as d from './data.js'
 import {randomString} from './util.js'
+import {Mixable} from './mixable.js'
 
 export class Entity extends Mixable {
   constructor(template){

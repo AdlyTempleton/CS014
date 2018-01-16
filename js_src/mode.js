@@ -25,6 +25,7 @@ class Mode {
   render(display){
   }
 
+  renderAvatar(display){}
 }
 
 export class PlayMode extends Mode {
@@ -37,6 +38,11 @@ export class PlayMode extends Mode {
       display.clear();
       d.DATA.currentMap().drawOn(display, d.DATA.cameraLocation.x,d.DATA.cameraLocation.y);
       //this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
+    }
+
+    renderAvatar(display){
+      display.drawText(2, 2, "Class: Bard");
+      display.drawText(2, 4, `Time: ${this.avatar.getTime()}`);
     }
 
     handleInput(eventType, e){
@@ -110,10 +116,7 @@ export class HelpMode extends Mode{
   }
 
   handleInput(eventType, e){
-    console.log(eventType);
-    console.log(e.keyCode);
     if(eventType == "keydown" && e.keyCode == BINDINGS.KEY_HELP.id){
-      console.log("switching");
       this.game.switchModes("play");
       return true;
     }

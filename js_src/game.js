@@ -116,9 +116,7 @@
     },
 
     renderAvatar: function(display){
-      display.drawText(2, 2, "You are a bard");
-
-      display.drawText(2, 3, `Level: ${d.DATA.level}`);
+      this.curMode.renderAvatar(display);
     },
 
     renderLog: function(display){

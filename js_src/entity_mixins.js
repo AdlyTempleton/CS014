@@ -29,7 +29,7 @@ export let TimeTracker = {
       this.state.TimeTracker.timeTaken = t;
     },
     addTime: function(t){
-      thisstate.TimeTracker.timeTaken ++;
+      this.state.TimeTracker.timeTaken ++;
     }
   }
 }
