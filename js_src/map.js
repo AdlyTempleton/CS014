@@ -66,6 +66,10 @@ class Map {
     return this.attr.mapPosToEntityId[pos.x + "," + pos.y];
   }
 
+  getEntityObjectAt(pos) {
+    return d.DATA.getEntityFromId(this.getEntityAt(pos));
+  }
+
   setEntityAt(entityid, pos) {
     this.attr.mapPosToEntityId[pos.x + "," + pos.y] = entityid;
   }
@@ -157,6 +161,10 @@ class Map {
   populate() {
     for (var i = 0; i < 3; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("traveler"));
+    }
+
+    for (var i = 0; i < 6; i++) {
+      this.addEntityAtRandomPos(EntityFactory.create("rat"));
     }
   }
 

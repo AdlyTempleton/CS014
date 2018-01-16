@@ -1,5 +1,4 @@
 import * as d from "./data.js";
-
 import { TILES } from "./tile.js";
 let _exampleMixin = {
   META: {
@@ -19,6 +18,26 @@ let _exampleMixin = {
   }
 };
 
+export let MeeleeAttacker = {
+  META: {
+    mixinName: "MeeleeAttacker",
+    mixingGroupName: "bump",
+    initialize: function(template) {
+      this.state.MeeleeAttacker.attack = template.meeleeAttack || 1;
+    }
+  },
+  LISTENERS: {
+    bump: function(eventData) {
+      var target = eventData.entity;
+      console.dir(eventData.entity);
+      target.raiseMixinEvent("damagedBy", {
+        damageAmt: this.state.MeeleeAttacker.attack,
+        damageSrc: this
+      });
+    }
+  }
+};
+
 export let CorporealMover = {
   META: {
     mixinName: "CorporealMover",
@@ -32,11 +51,21 @@ export let CorporealMover = {
       newLoc.y += dy;
 
       if (d.DATA.currentMap().isTilePassable(newLoc)) {
-        //d.DATA.cameraLocation = newLoc;
+        var entityAtNewLoc = d.DATA.getEntityFromId(
+          d.DATA.currentMap().getEntityAt(newLoc)
+        );
 
-        this.moveTo(newLoc);
-
-        this.raiseMixinEvent("postMove", {});
+        if (entityAtNewLoc) {
+          this.raiseMixinEvent("bump", {
+            entity: entityAtNewLoc
+          });
+          entityAtNewLoc.raiseMixinEvent("bumped", {
+            entity: this
+          });
+        } else {
+          this.moveTo(newLoc);
+          this.raiseMixinEvent("postMove", {});
+        }
       }
     }
   }
@@ -54,6 +83,30 @@ export let Wander = {
       ];
 
       var move = moves.random();
+      this.tryMove(move.x, move.y);
+    }
+  }
+};
+
+export let WanderAttackNearby = {
+  META: { mixinName: "AIWander", mixinGroup: "AI" },
+  METHODS: {
+    takeTurn(turnData) {
+      var moves = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+      ];
+
+      var move = moves.random();
+
+      //If the player is nearby, move to them
+      var xToPlayer = turnData.avatar.getPos().x - this.getPos().x;
+      var yToPlayer = turnData.avatar.getPos().y - this.getPos().y;
+      if (Math.abs(xToPlayer + yToPlayer) == 1 && xToPlayer * yToPlayer) {
+        move = { x: xToPlayer, y: yToPlayer };
+      }
       this.tryMove(move.x, move.y);
     }
   }

@@ -1,42 +1,44 @@
-import {MessageHandler} from './msg.js'
-import {mapFactory} from './map.js'
-import {Entity} from './entity.js'
-import {EntityFactory} from './entities.js'
+import { MessageHandler } from "./msg.js";
+import { mapFactory } from "./map.js";
+import { Entity } from "./entity.js";
+import { EntityFactory } from "./entities.js";
 export let DATA = {
-  clear: function(){
+  clear: function() {
     this.level = 0;
-    this.cameraLocation = {x:0, y:0};
+    this.cameraLocation = { x: 0, y: 0 };
     this.nextMapId = 1;
     this.nextEntityId = 1;
     this.maps = {};
     this.entities = {};
-    this.currentMapId = '';
+    this.currentMapId = "";
   },
 
-  init: function(game){
+  getEntityFromId: function(eid) {
+    return this.entities[eid];
+  },
+
+  init: function(game) {
     this.clear();
     this.game = game;
   },
 
-  currentMap: function(){
+  currentMap: function() {
     return this.maps[this.currentMapId];
   },
 
-  handleSave: function(game){
-    if(!localStorageAvailable()){
+  handleSave: function(game) {
+    if (!localStorageAvailable()) {
       return;
     }
-
 
     this.temp = {};
     this.temp.avatarId = this.game.modes.play.avatar.getId();
 
-    window.localStorage.setItem(game.SAVE_LOCATION,JSON.stringify(this));
+    window.localStorage.setItem(game.SAVE_LOCATION, JSON.stringify(this));
   }
-}
+};
 
-
-export function handleLoad(game){
+export function handleLoad(game) {
   let saved = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
 
   DATA.clear();
@@ -50,13 +52,12 @@ export function handleLoad(game){
   DATA.currentMapId = saved.currentMapId;
   DATA.nextEntityId = saved.nextEntityId;
 
-
-  for (var mapid in saved.maps){
+  for (var mapid in saved.maps) {
     if (!saved.maps.hasOwnProperty(mapid)) continue;
     DATA[mapid] = mapFactory(saved.maps[mapid]);
   }
 
-  for(var entityId in saved.entities){
+  for (var entityId in saved.entities) {
     var entity = EntityFactory.create(saved.entities[entityId].templateName);
     entity.state = saved.entities[entityId].state;
     DATA.entities[entityId] = entity;
@@ -72,13 +73,14 @@ export function handleLoad(game){
 function localStorageAvailable() {
   // NOTE: see https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
   try {
-    var x = '__storage_test__';
-    window.localStorage.setItem( x, x);
+    var x = "__storage_test__";
+    window.localStorage.setItem(x, x);
     window.localStorage.removeItem(x);
     return true;
-  }
-  catch(e) {
-    MessageHandler.send('Sorry, no local data storage is available for this browser so game save/load is not possible');
+  } catch (e) {
+    MessageHandler.send(
+      "Sorry, no local data storage is available for this browser so game save/load is not possible"
+    );
     return false;
   }
 }

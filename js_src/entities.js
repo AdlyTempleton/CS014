@@ -16,3 +16,14 @@ EntityFactory.learn({
   symbol: new Symbol("T", "#4f4"),
   mixinNames: ["CorporealMover", "Wander"]
 });
+
+EntityFactory.learn({
+  name: "rat",
+  symbol: new Symbol("R", "#808080"),
+  mixinNames: [
+    "CorporealMover",
+    "WanderAttackNearby",
+    "HitPoints",
+    "MeeleeAttacker"
+  ]
+});
