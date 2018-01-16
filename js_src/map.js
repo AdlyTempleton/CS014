@@ -49,27 +49,21 @@ class Map{
   }
 
   deleteEntityAt(pos){
-    console.log(pos.x + ',' + pos.y);
     delete this.attr.mapPosToEntityId[pos.x + ',' + pos.y];
   }
 
   moveEntityTo(entityid, oldPos, newPos){
-    console.log(JSON.stringify(this.attr.mapPosToEntityId));
     this.deleteEntityAt(oldPos);
     this.setEntityAt(entityid, newPos);
     this.attr.entityIdToMapPos[entityid] = newPos;
 
-    console.log(JSON.stringify(this.attr.mapPosToEntityId));
   }
 
   addEntityAt(entity, pos){
-    console.log('call');
-    console.dir(this);
     this.attr.entityIdToMapPos[entity.getId()] = pos;
     this.setEntityAt(entity.getId(), pos);
     entity.setMapId(this.getId())
     entity.setPos(pos)
-    console.dir(this);
   }
 
   addEntityAtRandomPos(entity){

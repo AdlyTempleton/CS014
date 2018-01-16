@@ -88,6 +88,7 @@
       this.modes.lose = new modes.LoseMode(this);
       this.modes.play = new modes.PlayMode(this);
       this.modes.menu = new modes.MenuMode(this);
+      this.modes.help = new modes.HelpMode(this);
     },
 
     bindEvent: function(eventType){

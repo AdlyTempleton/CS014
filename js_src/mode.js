@@ -4,6 +4,7 @@ import {MessageHandler} from './msg.js'
 import {Symbol} from './symbol.js'
 import {TILES} from './tile.js'
 import {EntityFactory} from './entities.js'
+import {BINDINGS} from './key.js'
 
 class Mode {
 
@@ -18,7 +19,8 @@ class Mode {
 
   exit(){}
 
-  handleInput(eventType, e){}
+  handleInput(eventType, e){
+  }
 
   render(display){
   }
@@ -40,18 +42,26 @@ export class PlayMode extends Mode {
     handleInput(eventType, e){
       if(eventType == "keyup"){
         switch(e.keyCode){
-          case 27:
+          case BINDINGS.MENU.id:
             this.game.switchModes('menu');
             return true;
         }
       }
 
       if(eventType == "keydown"){
+
+        if(e.keyCode == BINDINGS.KEY_HELP.id){
+          this.game.switchModes("help");
+          return true;
+        }
+
         //Moving code
         //A map from key codes to coordinates to move
+        //var moveKeys = {2: {x: -1, y:0}};
         var moveKeys = {65: {x: -1, y:0}, 87: {x: 0, y:-1}, 68: {x: 1, y:0}, 83: {x: 0, y:1}};
 
-        if(e.keyCode in moveKeys){
+
+              if(e.keyCode in moveKeys){
           var newLoc = {x: this.avatar.getPos().x, y: this.avatar.getPos().y};
           newLoc.x += moveKeys[e.keyCode].x;
           newLoc.y += moveKeys[e.keyCode].y;
@@ -75,15 +85,38 @@ export class PlayMode extends Mode {
 
 export class WinMode extends Mode{
     render(display){
-      display.clear()
+      display.clear();
       display.drawText(2, 2, "You have successfully rejoined the party.");
     }
 }
 
 export class LoseMode extends Mode{
   render(display){
-    display.clear()
+    display.clear();
     display.drawText(2, 2, "You have died.");
+  }
+}
+
+export class HelpMode extends Mode{
+  render(display){
+    display.clear();
+    var i = 2;
+    for(var k in BINDINGS){
+      if(BINDINGS.hasOwnProperty(k)){
+        display.drawText(2, i++, BINDINGS[k].name);
+        display.drawText(6, i++, BINDINGS[k].desc, '#f00');
+      }
+    }
+  }
+
+  handleInput(eventType, e){
+    console.log(eventType);
+    console.log(e.keyCode);
+    if(eventType == "keydown" && e.keyCode == BINDINGS.KEY_HELP.id){
+      console.log("switching");
+      this.game.switchModes("play");
+      return true;
+    }
   }
 }
 
@@ -114,23 +147,23 @@ export class MenuMode extends Mode{
     if(eventType == "keyup"){
       switch (e.keyCode) {
         //ESC
-        case 27:
+        case BINDINGS.MENU.id:
           this.game.switchModes('play');
           return true;
         //N
-        case 78:
+        case BINDINGS.NEW_GAME.id:
           d.DATA.clear();
           this.game.setupGame();
           this.game.switchModes('play');
           return true;
         //S
-        case 83:
+        case BINDINGS.SAVE_GAME.id:
           d.DATA.handleSave(this.game);
           MessageHandler.send("Game saved");
           this.game.switchModes('play');
           return true;
         //L
-        case 76:
+        case BINDINGS.LOAD_GAME.id:
           d.handleLoad(this.game);
           MessageHandler.send("Game loaded");
           this.game.switchModes('play');
@@ -151,7 +184,7 @@ export class StartupMode extends Mode {
 
   handleInput(eventType, e){
 
-    if(eventType == "keyup" && e.keyCode == 13){
+    if(eventType == "keyup" && e.keyCode == BINDINGS.START_GAME.id){
       this.game.switchModes('menu');
       return true;
     }
