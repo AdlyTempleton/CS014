@@ -43,6 +43,68 @@ export let CorporealMover = {
   }
 };
 
+export let HitPoints = {
+  META: {
+    mixinName: "HitPoints",
+    mixinGroup: "HitPoints",
+    stateModel: {
+      curHp: 0,
+      maxHp: 0
+    },
+    initialize: function(template) {
+      this.state.HitPoints.maxHp = template.maxHp || 1;
+      this.state.HitPoints.curHp = template.curHp || this.state.HitPoints.maxHp;
+    }
+  },
+  METHODS: {
+    setHp: function(newHp) {
+      this.state.HitPoints.curHp = newHp;
+    },
+    gainHp: function(dHp) {
+      if (dHp < 0) {
+        return;
+      }
+      this.state.HitPoints.curHp = Math.min(
+        this.state.HitPoints.curHp + dHp,
+        this.state.HitPoints.maxHp
+      );
+    },
+    loseHp: function(dHp) {
+      if (dHp < 0) {
+        return;
+      }
+      this.state.HitPoints.curHp -= dHp;
+    },
+    setMaxHp: function(newMaxHp) {
+      this.state.HitPoints.maxHp = newMaxHp;
+    },
+    getCurHp: function() {
+      return this.state.HitPoints.curHp;
+    },
+    getMaxHp: function() {
+      return this.state.HitPoints.maxHp;
+    }
+  },
+  LISTENERS: {
+    damagedBy: function(evtData) {
+      // handler for 'eventLabel' events
+      this.loseHp(evtData.damageAmt);
+      evtData.damageSrc.raiseMixinEvent("damages", {
+        target: this,
+        damageAmt: evtData.damageAmt
+      });
+      if (this.state.HitPoints.curHp <= 0) {
+        this.raiseMixinEvent("killed", { killer: evtData.damageSrc });
+        evtData.damageSrc.raiseMixinEvent("kills", { kills: this });
+      }
+    },
+    killed: function(evtData) {
+      // console.log(this.getName()+' killed');
+      this.destroy();
+    }
+  }
+};
+
 export let TimeTracker = {
   META: {
     mixinName: "TimeTracker",

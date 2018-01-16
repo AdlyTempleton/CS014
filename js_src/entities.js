@@ -7,5 +7,6 @@ export let EntityFactory = new Factory(Entity, "entities");
 EntityFactory.learn({
   name: "avatar",
   symbol: new Symbol("@", "#dd4"),
-  mixinNames: ["TimeTracker", "CorporealMover"]
+  mixinNames: ["TimeTracker", "CorporealMover", "HitPoints"],
+  maxHp: 10
 });

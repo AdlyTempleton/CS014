@@ -1,12 +1,10 @@
-import ROT from 'rot-js';
-import {TILES} from './tile.js'
-import * as d from './data.js'
-import {init2DArray, randomString} from './util.js';
+import ROT from "rot-js";
+import { TILES } from "./tile.js";
+import * as d from "./data.js";
+import { init2DArray, randomString } from "./util.js";
 
-class Map{
-
-  constructor(w, h, type = 'basic'){
-
+class Map {
+  constructor(w, h, type = "basic") {
     this.attr = {};
     this.attr.w = w;
     this.attr.h = h;
@@ -15,118 +13,143 @@ class Map{
     this.attr.isBuilt = false;
     this.attr.seed = ROT.RNG.getState();
     this.attr.entityIdToMapPos = {};
-    this.attr.mapPosToEntityId = {}
+    this.attr.mapPosToEntityId = {};
   }
 
-  uid(){
-    return 'map: ' + randomString() + d.DATA.nextMapId++;
+  uid() {
+    return "map: " + randomString() + d.DATA.nextMapId++;
   }
 
-  isBuilt(){return this.isBuilt;}
+  isBuilt() {
+    return this.isBuilt;
+  }
 
-  getWidth(){return this.attr.w;}
-  getHeight(){return this.attr.w;}
-  setWidth(w){this.attr.w = w;}
-  setHeight(h){this.attr.h = h;}
+  getWidth() {
+    return this.attr.w;
+  }
+  getHeight() {
+    return this.attr.w;
+  }
+  setWidth(w) {
+    this.attr.w = w;
+  }
+  setHeight(h) {
+    this.attr.h = h;
+  }
 
-  getId(){return this.attr.id;}
-  setId(id){this.attr.id = id;}
+  getId() {
+    return this.attr.id;
+  }
+  setId(id) {
+    this.attr.id = id;
+  }
 
-  getType(){return this.attr.type;}
-  setType(t){this.attr.type = t;}
+  getType() {
+    return this.attr.type;
+  }
+  setType(t) {
+    this.attr.type = t;
+  }
 
-  getSeed(){return this.attr.seed;}
-  setSeed(seed){this.attr.seed = seed;}
+  getSeed() {
+    return this.attr.seed;
+  }
+  setSeed(seed) {
+    this.attr.seed = seed;
+  }
 
   //Entity mapping codes
 
-  getEntityAt(pos){
-    return this.attr.mapPosToEntityId[pos.x + ',' + pos.y];
+  getEntityAt(pos) {
+    return this.attr.mapPosToEntityId[pos.x + "," + pos.y];
   }
 
-  setEntityAt(entityid, pos){
-    this.attr.mapPosToEntityId[pos.x + ',' + pos.y] = entityid;
+  setEntityAt(entityid, pos) {
+    this.attr.mapPosToEntityId[pos.x + "," + pos.y] = entityid;
   }
 
-  deleteEntityAt(pos){
-    delete this.attr.mapPosToEntityId[pos.x + ',' + pos.y];
+  deleteEntityAt(pos) {
+    delete this.attr.mapPosToEntityId[pos.x + "," + pos.y];
   }
 
-  moveEntityTo(entityid, oldPos, newPos){
+  removeEntity(entity) {
+    this.deleteEntityAt(entity.getPos());
+    delete this.attr.entityIdToMapPos[entity.getId()];
+  }
+
+  moveEntityTo(entityid, oldPos, newPos) {
     this.deleteEntityAt(oldPos);
     this.setEntityAt(entityid, newPos);
     this.attr.entityIdToMapPos[entityid] = newPos;
-
   }
 
-  addEntityAt(entity, pos){
+  addEntityAt(entity, pos) {
     this.attr.entityIdToMapPos[entity.getId()] = pos;
     this.setEntityAt(entity.getId(), pos);
-    entity.setMapId(this.getId())
-    entity.setPos(pos)
+    entity.setMapId(this.getId());
+    entity.setPos(pos);
   }
 
-  addEntityAtRandomPos(entity){
+  addEntityAtRandomPos(entity) {
     this.addEntityAt(entity, this.getRandomPointInRoom());
   }
 
-  toJSON(){
-    return this.attr
+  toJSON() {
+    return this.attr;
   }
 
-  restoreFromState(json){
+  restoreFromState(json) {
     this.attr = JSON.parse(json);
   }
 
-  inBounds(p){
+  inBounds(p) {
     return p.x >= 0 && p.x < this.attr.w && p.y >= 0 && p.y < this.attr.h;
   }
 
-  getTile(p){
-    if(!this.inBounds(p)){
+  getTile(p) {
+    if (!this.inBounds(p)) {
       return TILES.NULL;
     }
     return this.tg[p.x][p.y];
   }
 
-  drawOn(display, camX, camY){
+  drawOn(display, camX, camY) {
     let o = display.getOptions();
 
-    let xStart = camX - Math.round(o.width/2);
-    let yStart = camY - Math.round(o.height/2);
+    let xStart = camX - Math.round(o.width / 2);
+    let yStart = camY - Math.round(o.height / 2);
 
-
-    for(let iw = 0; iw < o.width; iw++){
-      for(let ih = 0; ih < o.height; ih++){
-        let pos = {x: iw + xStart, y:ih + yStart};
-        if(this.getEntityAt(pos)){
+    for (let iw = 0; iw < o.width; iw++) {
+      for (let ih = 0; ih < o.height; ih++) {
+        let pos = { x: iw + xStart, y: ih + yStart };
+        if (this.getEntityAt(pos)) {
           d.DATA.entities[this.getEntityAt(pos)].render(display, iw, ih);
-        }else{
+        } else {
           this.getTile(pos).drawOn(display, iw, ih);
         }
       }
     }
   }
 
-  isTilePassable(p){
+  isTilePassable(p) {
     return this.getTile(p).isPassable();
   }
 
-  getRandomPointInRoom(){
+  getRandomPointInRoom() {
     var rooms = this.o.getRooms();
     var room = rooms[ROT.RNG.getUniformInt(0, rooms.length - 1)];
-    var xLoc = ROT.RNG.getUniformInt(room.getLeft(),room.getRight());
-    var yLoc = ROT.RNG.getUniformInt(room.getBottom(),room.getTop());
-    return {x: xLoc, y:yLoc}
+    var xLoc = ROT.RNG.getUniformInt(room.getLeft(), room.getRight());
+    var yLoc = ROT.RNG.getUniformInt(room.getBottom(), room.getTop());
+    return { x: xLoc, y: yLoc };
   }
 
-  build(){
+  build() {
     var options = {
-    roomWidth: [8, 15], /* room minimum and maximum width */
-    roomHeight: [8, 15], /* room minimum and maximum height */
-    corridorLength: [10, 20], /* corridor minimum and maximum length */
-    dugPercentage: 0.4, /* we stop after this percentage of level area has been dug out */
-    timeLimit: 10000 /* we stop after this much time has passed (msec) */
+      roomWidth: [8, 15] /* room minimum and maximum width */,
+      roomHeight: [8, 15] /* room minimum and maximum height */,
+      corridorLength: [10, 20] /* corridor minimum and maximum length */,
+      dugPercentage: 0.4 /* we stop after this percentage of level area has been dug out */,
+      timeLimit: 10000 /* we stop after this much time has passed (msec) */
     };
 
     var oldSeed = ROT.RNG.getState();
@@ -134,7 +157,7 @@ class Map{
 
     this.tg = init2DArray(this.getWidth(), this.getHeight());
     this.o = new ROT.Map.Digger(this.getWidth(), this.getHeight(), options);
-    var f = function(x, y, t){
+    var f = function(x, y, t) {
       this.tg[x][y] = t ? TILES.WALLS : TILES.EMPTY;
     };
     this.o.create(f.bind(this));
@@ -147,25 +170,25 @@ class Map{
   }
 }
 
-export function mapFactory(mapData){
-  let m = new Map(50, 50)
+export function mapFactory(mapData) {
+  let m = new Map(50, 50);
 
-  if(mapData.w){
+  if (mapData.w) {
     m.setWidth(mapData.w);
   }
-  if(mapData.h){
+  if (mapData.h) {
     m.setHeight(mapData.h);
   }
-  if(mapData.type){
+  if (mapData.type) {
     m.setType(mapData.type);
   }
-  if(mapData.id){
-    m.setId(mapData.id)
+  if (mapData.id) {
+    m.setId(mapData.id);
   }
-  if(mapData.isBuilt){
+  if (mapData.isBuilt) {
     m.isBuilt = mapData.isBuilt;
   }
-  if(mapData.seed){
+  if (mapData.seed) {
     m.setSeed(mapData.seed);
   }
 

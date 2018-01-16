@@ -34,6 +34,13 @@ export class Mixable {
         this[method] = m.METHODS[method];
       }
     }
+
+    for (let mi = 0; mi < this.mixins.length; mi++) {
+      var m = this.mixins[mi];
+      if (m.META.initialize) {
+        m.META.initialize.call(this, template);
+      }
+    }
   }
 
   raiseMixinEvent(evtType, evtData) {

@@ -41,6 +41,11 @@ export class PlayMode extends Mode {
   renderAvatar(display) {
     display.drawText(2, 2, "Class: Bard");
     display.drawText(2, 4, `Time: ${this.avatar.getTime()}`);
+    display.drawText(
+      2,
+      6,
+      `HP: ${this.avatar.getCurHp()}/${this.avatar.getMaxHp()}`
+    );
   }
 
   handleInput(eventType, e) {
