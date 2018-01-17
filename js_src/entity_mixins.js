@@ -1,5 +1,7 @@
 import * as d from "./data.js";
 import { TILES } from "./tile.js";
+
+import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import ROT from "rot-js";
 let _exampleMixin = {
@@ -122,7 +124,7 @@ export let CorporealMover = {
 export let Wander = {
   META: { mixinName: "AIWander", mixinGroup: "AI" },
   METHODS: {
-    takeTurn(turnData) {
+    act() {
       var moves = [
         { x: 1, y: 0 },
         { x: -1, y: 0 },
@@ -136,10 +138,19 @@ export let Wander = {
   }
 };
 
+export let PlayerActor = {
+  META: { mixingName: "PlayerActor", mixinGroup: "AI" },
+  METHODS: {
+    act: function() {
+      TIMER.engine.lock();
+    }
+  }
+};
+
 export let WanderAttackNearby = {
   META: { mixinName: "AIWander", mixinGroup: "AI" },
-  METHODS: {
-    takeTurn(turnData) {
+  LISTENERS: {
+    act: function() {
       var moves = [
         { x: 1, y: 0 },
         { x: -1, y: 0 },
@@ -150,8 +161,8 @@ export let WanderAttackNearby = {
       var move = moves.random();
 
       //If the player is nearby, move to them
-      var xToPlayer = turnData.avatar.getPos().x - this.getPos().x;
-      var yToPlayer = turnData.avatar.getPos().y - this.getPos().y;
+      var xToPlayer = d.DATA.getAvatar().getPos().x - this.getPos().x;
+      var yToPlayer = d.DATA.getAvatar().getPos().y - this.getPos().y;
       if (
         (Math.abs(xToPlayer) == 1 && yToPlayer == 0) ||
         (Math.abs(yToPlayer) == 1 && xToPlayer == 0)

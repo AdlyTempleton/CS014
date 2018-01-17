@@ -17,6 +17,10 @@ export let DATA = {
     return this.entities[eid];
   },
 
+  getAvatar: function() {
+    return this.getEntityFromId(this.avatarId);
+  },
+
   init: function(game) {
     this.clear();
     this.game = game;
@@ -30,9 +34,6 @@ export let DATA = {
     if (!localStorageAvailable()) {
       return;
     }
-
-    this.temp = {};
-    this.temp.avatarId = this.game.modes.play.avatar.getId();
 
     window.localStorage.setItem(game.SAVE_LOCATION, JSON.stringify(this));
   }
@@ -66,7 +67,9 @@ export function handleLoad(game) {
     entity.getMap().addEntityAt(entity, entity.getPos());
   }
 
-  DATA.game.modes.play.avatar = DATA.entities[saved.temp.avatarId];
+  DATA.game.modes.play.avatarId = saved.avatarId;
+
+  DATA.game.modes.play.avatar = DATA.entities[saved.avatarId];
 }
 
 //Fix copied from weed strike

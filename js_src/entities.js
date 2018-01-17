@@ -13,7 +13,8 @@ EntityFactory.learn({
     "HitPoints",
     "AvatarMixin",
     "MeeleeAttacker",
-    "Logger"
+    "Logger",
+    "PlayerActor"
   ],
   meeleeAttack: 2,
   maxHp: 20

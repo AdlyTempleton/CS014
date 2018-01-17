@@ -5,6 +5,7 @@ import { Symbol } from "./symbol.js";
 import { TILES } from "./tile.js";
 import { EntityFactory } from "./entities.js";
 import { BINDINGS } from "./key.js";
+import { TIMER } from "./timing.js";
 
 class Mode {
   constructor(g) {
@@ -27,6 +28,11 @@ class Mode {
 export class PlayMode extends Mode {
   enter() {
     super.enter();
+    TIMER.engine.unlock();
+  }
+
+  exit() {
+    TIMER.engine.lock();
   }
   render(display) {
     display.clear();
@@ -35,27 +41,15 @@ export class PlayMode extends Mode {
       d.DATA.cameraLocation.x,
       d.DATA.cameraLocation.y
     );
-    //this.avatarSymbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
+    //d.DATA.getAvatar()Symbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
   }
-
-  takeTurns() {
-    var entities = d.DATA.currentMap().getAllEntities();
-
-    for (let ei = 0; ei < entities.length; ei++) {
-      let entity = entities[ei];
-      if (entity.hasOwnProperty("takeTurn")) {
-        entity.takeTurn({ avatar: this.avatar });
-      }
-    }
-  }
-
   renderAvatar(display) {
     display.drawText(2, 2, "Class: Bard");
-    display.drawText(2, 4, `Time: ${this.avatar.getTime()}`);
+    display.drawText(2, 4, `Time: ${d.DATA.getAvatar().getTime()}`);
     display.drawText(
       2,
       6,
-      `HP: ${this.avatar.getCurHp()}/${this.avatar.getMaxHp()}`
+      `HP: ${d.DATA.getAvatar().getCurHp()}/${d.DATA.getAvatar().getMaxHp()}`
     );
   }
 
@@ -85,10 +79,16 @@ export class PlayMode extends Mode {
       };
 
       if (e.keyCode in moveKeys) {
-        this.avatar.tryMove(moveKeys[e.keyCode].x, moveKeys[e.keyCode].y);
+        d.DATA.getAvatar().tryMove(
+          moveKeys[e.keyCode].x,
+          moveKeys[e.keyCode].y
+        );
 
-        this.takeTurns();
-        if (d.DATA.currentMap().getTile(this.avatar.getPos()) == TILES.STAIRS) {
+        TIMER.engine.unlock();
+        if (
+          d.DATA.currentMap().getTile(d.DATA.getAvatar().getPos()) ==
+          TILES.STAIRS
+        ) {
           this.game.switchModes("win");
         }
       }

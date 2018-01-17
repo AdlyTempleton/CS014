@@ -2,6 +2,7 @@ import { Symbol } from "./symbol.js";
 import * as d from "./data.js";
 import { randomString } from "./util.js";
 import { Mixable } from "./mixable.js";
+import { TIMER } from "./timing.js";
 
 export class Entity extends Mixable {
   constructor(template) {
@@ -19,6 +20,16 @@ export class Entity extends Mixable {
     return "entity: " + randomString() + d.DATA.nextEntityId++;
   }
 
+  getSpeed() {
+    return 100;
+  }
+
+  act() {
+    TIMER.engine.lock();
+    this.raiseMixinEvent("act", {});
+    TIMER.engine.unlock();
+  }
+
   destroy() {
     console.dir(d.DATA.entities);
     this.getMap().removeEntity(this);
@@ -26,6 +37,7 @@ export class Entity extends Mixable {
     this.state.destroyed = true;
 
     console.dir(d.DATA.entities);
+    TIMER.scheduler.remove(this);
   }
 
   getSymbol() {

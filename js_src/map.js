@@ -1,8 +1,9 @@
 import ROT from "rot-js";
 import { TILES } from "./tile.js";
 import * as d from "./data.js";
-
+import { TIMER } from "./timing.js";
 import { EntityFactory } from "./entities.js";
+import { Game } from "./game.js";
 import { init2DArray, randomString } from "./util.js";
 
 class Map {
@@ -105,6 +106,7 @@ class Map {
     this.setEntityAt(entity.getId(), pos);
     entity.setMapId(this.getId());
     entity.setPos(pos);
+    TIMER.scheduler.add(entity, true);
   }
 
   addEntityAtRandomPos(entity) {

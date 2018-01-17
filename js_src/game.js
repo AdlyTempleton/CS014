@@ -5,6 +5,7 @@ import * as modes from "./mode.js";
 import * as d from "./data.js";
 import { mapFactory } from "./map.js";
 import { EntityFactory } from "./entities.js";
+import { TIMER } from "./timing.js";
 
 export let Game = {
   msg: MessageHandler,
@@ -30,6 +31,8 @@ export let Game = {
   },
 
   init: function() {
+    TIMER.init();
+
     this._randomSeed = 5 + Math.floor(Math.random() * 100000);
     //this._randomSeed = 76250;
     console.log("using random seed " + this._randomSeed);
@@ -53,13 +56,18 @@ export let Game = {
   },
 
   setupGame: function() {
+    console.log("Setting up game");
     this.setupMap();
 
-    this.modes.play.avatar = EntityFactory.create("avatar");
-    d.DATA.currentMap().addEntityAtRandomPos(this.modes.play.avatar);
-    d.DATA.cameraLocation = this.modes.play.avatar.getPos();
+    var avatar = EntityFactory.create("avatar");
+    d.DATA.avatarId = avatar.getId();
+    d.DATA.currentMap().addEntityAtRandomPos(avatar);
+    d.DATA.cameraLocation = avatar.getPos();
 
     this.isPlaying = true;
+
+    console.dir(TIMER.scheduler);
+    TIMER.engine.start();
   },
 
   setupMap: function() {
