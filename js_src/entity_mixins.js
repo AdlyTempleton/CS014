@@ -29,7 +29,6 @@ export let MeeleeAttacker = {
   LISTENERS: {
     bump: function(eventData) {
       var target = eventData.entity;
-      console.dir(eventData.entity);
       target.raiseMixinEvent("damagedBy", {
         damageAmt: this.state.MeeleeAttacker.attack,
         damageSrc: this
@@ -104,7 +103,10 @@ export let WanderAttackNearby = {
       //If the player is nearby, move to them
       var xToPlayer = turnData.avatar.getPos().x - this.getPos().x;
       var yToPlayer = turnData.avatar.getPos().y - this.getPos().y;
-      if (Math.abs(xToPlayer + yToPlayer) == 1 && xToPlayer * yToPlayer) {
+      if (
+        (Math.abs(xToPlayer) == 1 && yToPlayer == 0) ||
+        (Math.abs(yToPlayer) == 1 && xToPlayer == 0)
+      ) {
         move = { x: xToPlayer, y: yToPlayer };
       }
       this.tryMove(move.x, move.y);
