@@ -80,10 +80,8 @@ class Map {
   }
 
   removeEntity(entity) {
-    console.dir(this);
     this.deleteEntityAt(entity.getPos());
     delete this.attr.entityIdToMapPos[entity.getId()];
-    console.dir(this);
   }
 
   moveEntityTo(entityid, oldPos, newPos) {

@@ -66,7 +66,6 @@ export let Game = {
 
     this.isPlaying = true;
 
-    console.dir(TIMER.scheduler);
     TIMER.engine.start();
   },
 

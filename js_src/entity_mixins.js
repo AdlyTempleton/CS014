@@ -207,6 +207,7 @@ export let HitPoints = {
       this.state.HitPoints.curHp -= dHp;
     },
     setMaxHp: function(newMaxHp) {
+      console.log("Setting max hp");
       this.state.HitPoints.maxHp = newMaxHp;
     },
     getCurHp: function() {
