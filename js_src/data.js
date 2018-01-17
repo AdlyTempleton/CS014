@@ -1,8 +1,17 @@
+/**
+ * [DATA The datastore file. Stores and handles persistence of universal game state]
+ * @type {Object}
+ */
 import { MessageHandler } from "./msg.js";
 import { mapFactory } from "./map.js";
 import { Entity } from "./entity.js";
 import { EntityFactory } from "./entities.js";
+import { Game } from "./game.js";
 export let DATA = {
+  /**
+   * Resets/initializes stored values
+   * @return {[type]} [description]
+   */
   clear: function() {
     this.level = 0;
     this.cameraLocation = { x: 0, y: 0 };
@@ -11,41 +20,62 @@ export let DATA = {
     this.maps = {};
     this.entities = {};
     this.currentMapId = "";
+    this.avatarId = "";
   },
 
+  /**
+   * Gets an entity from an entity id string
+   * @param  {String} eid [An entity id string]
+   * @return {Entity}     [Matching Entity]
+   */
   getEntityFromId: function(eid) {
     return this.entities[eid];
   },
 
+  /**
+   * Universal access to avatar object
+   * @return {Entity} [Avatar object]
+   */
   getAvatar: function() {
     return this.getEntityFromId(this.avatarId);
   },
 
-  init: function(game) {
+  /**
+   * Init function
+   * Currently a simple delegate to this.clear
+   */
+  init: function() {
     this.clear();
-    this.game = game;
   },
 
+  /**
+   * Gets the map currently in use
+   * @return {Map} [The map in use]
+   */
   currentMap: function() {
     return this.maps[this.currentMapId];
   },
 
-  handleSave: function(game) {
+  /**
+   * Stringifies this object and saves to local storage
+   */
+  handleSave: function() {
     if (!localStorageAvailable()) {
       return;
     }
 
-    window.localStorage.setItem(game.SAVE_LOCATION, JSON.stringify(this));
+    window.localStorage.setItem(Game.SAVE_LOCATION, JSON.stringify(this));
   }
 };
 
-export function handleLoad(game) {
-  let saved = JSON.parse(window.localStorage.getItem(game.SAVE_LOCATION));
+/**
+ *  Reads JSON string from local storage and reloads state
+ *  Workhorse of persistence
+ */
+export function handleLoad() {
+  let saved = JSON.parse(window.localStorage.getItem(Game.SAVE_LOCATION));
 
   DATA.clear();
-  DATA.game = game;
-
-  game.fromJSON(saved.game);
 
   DATA.level = saved.level;
   DATA.cameraLocation = saved.cameraLocation;
@@ -72,7 +102,10 @@ export function handleLoad(game) {
   DATA.game.modes.play.avatar = DATA.entities[saved.avatarId];
 }
 
-//Fix copied from weed strike
+/**
+ * Helper method to test local storage
+ * @return {boolean} [true iff local storage is available]
+ */
 function localStorageAvailable() {
   // NOTE: see https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
   try {

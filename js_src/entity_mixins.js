@@ -1,14 +1,24 @@
+/**
+ * A list of mixins for entities
+ */
 import * as d from "./data.js";
 import { TILES } from "./tile.js";
 
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import ROT from "rot-js";
+
+/**
+ * Example Template for entity mixins
+ */
 let _exampleMixin = {
+  //Metadata
   META: {
     mixinName: "_exampleMixin",
     mixingGroupName: "ExampleMixinGroup",
     mixinNamespace: "_ExampleMixin",
+    //Initial state, values stored here will be initialized as constants for each new entity
+    //Only simple values stored here
     stateModel: {
       foo: 10
     },
@@ -143,6 +153,7 @@ export let PlayerActor = {
   METHODS: {
     act: function() {
       TIMER.engine.lock();
+      Game.render();
     }
   }
 };

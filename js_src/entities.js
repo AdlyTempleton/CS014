@@ -1,3 +1,7 @@
+/**
+ * A list of entity templates
+ * Exports an EntityFactory with all the tempaltes learned
+ */
 import { Entity } from "./entity.js";
 import { Factory } from "./factory.js";
 import { Symbol } from "./symbol.js";
