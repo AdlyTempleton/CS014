@@ -20,9 +20,12 @@ export class Entity extends Mixable {
   }
 
   destroy() {
+    console.dir(d.DATA.entities);
     this.getMap().removeEntity(this);
     delete d.DATA.entities[this.getId()];
     this.state.destroyed = true;
+
+    console.dir(d.DATA.entities);
   }
 
   getSymbol() {

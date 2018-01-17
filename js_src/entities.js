@@ -12,7 +12,8 @@ EntityFactory.learn({
     "CorporealMover",
     "HitPoints",
     "AvatarMixin",
-    "MeeleeAttacker"
+    "MeeleeAttacker",
+    "Logger"
   ],
   meeleeAttack: 2,
   maxHp: 20
@@ -25,6 +26,13 @@ EntityFactory.learn({
 });
 
 EntityFactory.learn({
+  name: "witch",
+  symbol: new Symbol("W", "#006400"),
+  mixinNames: ["CorporealMover", "Wander", "HitPoints", "Spawner"],
+  spawnFrequency: 3
+});
+
+EntityFactory.learn({
   name: "rat",
   symbol: new Symbol("R", "#808080"),
   mixinNames: [
@@ -33,5 +41,6 @@ EntityFactory.learn({
     "HitPoints",
     "MeeleeAttacker"
   ],
+  friendlyTypes: ["witch"],
   maxHp: 4
 });

@@ -40,6 +40,7 @@ export class PlayMode extends Mode {
 
   takeTurns() {
     var entities = d.DATA.currentMap().getAllEntities();
+
     for (let ei = 0; ei < entities.length; ei++) {
       let entity = entities[ei];
       if (entity.hasOwnProperty("takeTurn")) {

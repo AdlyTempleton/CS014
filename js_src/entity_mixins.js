@@ -1,5 +1,7 @@
 import * as d from "./data.js";
 import { TILES } from "./tile.js";
+import { MessageHandler } from "./msg.js";
+import ROT from "rot-js";
 let _exampleMixin = {
   META: {
     mixinName: "_exampleMixin",
@@ -24,15 +26,62 @@ export let MeeleeAttacker = {
     mixingGroupName: "bump",
     initialize: function(template) {
       this.state.MeeleeAttacker.attack = template.meeleeAttack || 1;
+      this.state.MeeleeAttacker.friendlyTypes = template.friendlyTypes || [];
     }
   },
   LISTENERS: {
     bump: function(eventData) {
       var target = eventData.entity;
-      target.raiseMixinEvent("damagedBy", {
-        damageAmt: this.state.MeeleeAttacker.attack,
-        damageSrc: this
-      });
+      if (this.state.MeeleeAttacker.friendlyTypes.indexOf(target.name) == -1) {
+        target.raiseMixinEvent("damagedBy", {
+          damageAmt: this.state.MeeleeAttacker.attack,
+          damageSrc: this
+        });
+      }
+    }
+  }
+};
+
+export let Spawner = {
+  META: {
+    mixinName: "Spawner",
+    mixinGroupName: "EnemyAttributes",
+    initialize: function(template) {
+      this.state.Spawner.spawnType = template.spawnType || "rat";
+      this.state.Spawner.spawnFrequency = template.spawnFrequency || 10;
+    }
+  },
+  LISTENERS: {
+    postMove: function(event) {
+      if (ROT.RNG.getUniformInt(1, this.state.Spawner.spawnFrequency) == 1) {
+        var pos = d.DATA.currentMap().getRandomEmptyPointWithinCircle(
+          this.getPos(),
+          5
+        );
+        d.DATA.currentMap().spawnEntityAt("rat", pos);
+      }
+    }
+  }
+};
+
+export let Logger = {
+  META: {
+    mixinName: "Logger",
+    mininGroupName: "Logger"
+  },
+  LISTENERS: {
+    kills: function(event) {
+      MessageHandler.send(`Killed ${event.entity.name}`);
+    },
+    damages: function(event) {
+      MessageHandler.send(
+        `Attacking ${event.entity.name} for ${event.damageAmt}`
+      );
+    },
+    damagedBy: function(event) {
+      MessageHandler.send(
+        `Attacked by ${event.damageSrc.name} for ${event.damageAmt}`
+      );
     }
   }
 };
@@ -161,16 +210,15 @@ export let HitPoints = {
       // handler for 'eventLabel' events
       this.loseHp(evtData.damageAmt);
       evtData.damageSrc.raiseMixinEvent("damages", {
-        target: this,
+        entity: this,
         damageAmt: evtData.damageAmt
       });
       if (this.state.HitPoints.curHp <= 0) {
-        this.raiseMixinEvent("killed", { killer: evtData.damageSrc });
-        evtData.damageSrc.raiseMixinEvent("kills", { kills: this });
+        this.raiseMixinEvent("killed", { entity: evtData.damageSrc });
+        evtData.damageSrc.raiseMixinEvent("kills", { entity: this });
       }
     },
     killed: function(evtData) {
-      // console.log(this.getName()+' killed');
       this.destroy();
     }
   }

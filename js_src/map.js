@@ -79,8 +79,10 @@ class Map {
   }
 
   removeEntity(entity) {
+    console.dir(this);
     this.deleteEntityAt(entity.getPos());
     delete this.attr.entityIdToMapPos[entity.getId()];
+    console.dir(this);
   }
 
   moveEntityTo(entityid, oldPos, newPos) {
@@ -106,7 +108,11 @@ class Map {
   }
 
   addEntityAtRandomPos(entity) {
-    this.addEntityAt(entity, this.getRandomPointInRoom());
+    this.addEntityAt(entity, this.getRandomEmptyPointInRoom());
+  }
+
+  spawnEntityAt(templateName, pos) {
+    this.addEntityAt(EntityFactory.create(templateName), pos);
   }
 
   toJSON() {
@@ -158,6 +164,30 @@ class Map {
     return { x: xLoc, y: yLoc };
   }
 
+  getRandomEmptyPointInRoom() {
+    do {
+      var rooms = this.o.getRooms();
+      var room = rooms[ROT.RNG.getUniformInt(0, rooms.length - 1)];
+      var xLoc = ROT.RNG.getUniformInt(room.getLeft(), room.getRight());
+      var yLoc = ROT.RNG.getUniformInt(room.getBottom(), room.getTop());
+      var position = { x: xLoc, y: yLoc };
+    } while (this.getEntityAt(position) != undefined);
+    return position;
+  }
+
+  getRandomEmptyPointWithinCircle(centerPos, radius) {
+    do {
+      var xOffset = ROT.RNG.getUniformInt(-radius, radius);
+      var yOffset = ROT.RNG.getUniformInt(-radius, radius);
+      var position = { x: centerPos.x + xOffset, y: centerPos.y + yOffset };
+    } while (
+      this.getEntityAt(position) != undefined ||
+      !this.isTilePassable(position) ||
+      xOffset * xOffset + yOffset * yOffset > radius * radius
+    );
+    return position;
+  }
+
   populate() {
     for (var i = 0; i < 3; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("traveler"));
@@ -166,6 +196,8 @@ class Map {
     for (var i = 0; i < 6; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("rat"));
     }
+
+    this.addEntityAtRandomPos(EntityFactory.create("witch"));
   }
 
   build() {
