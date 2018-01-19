@@ -245,7 +245,7 @@ export class LevelMode extends Mode {
     if (eventType == "keypress") {
       console.log(e.keyCode);
       if (e.which == 49 || e.which == 50) {
-        var stat = e.keyCode == 49 ? this.statOption1 : this.statOption2;
+        var stat = e.which == 49 ? this.statOption1 : this.statOption2;
         d.DATA.getAvatar()
           .getStats()
           .increaseStat(stat);
