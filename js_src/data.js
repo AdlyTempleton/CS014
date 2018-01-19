@@ -7,20 +7,25 @@ import { mapFactory } from "./map.js";
 import { Entity } from "./entity.js";
 import { EntityFactory } from "./entities.js";
 import { Game } from "./game.js";
+import { Dungeon } from "./dungeon.js";
 export let DATA = {
   /**
    * Resets/initializes stored values
    * @return {[type]} [description]
    */
   clear: function() {
-    this.level = 0;
-    this.cameraLocation = { x: 0, y: 0 };
-    this.nextMapId = 1;
-    this.nextEntityId = 1;
+    this.state = {};
+    this.state.level = 0;
+    this.state.cameraLocation = { x: 0, y: 0 };
+    this.state.nextMapId = 1;
+    this.state.nextEntityId = 1;
     this.maps = {};
     this.entities = {};
-    this.currentMapId = "";
-    this.avatarId = "";
+    this.state.currentMapId = "";
+    this.state.avatarId = "";
+    this.state.dungeonLevel = 1;
+
+    this.dungeon = {};
   },
 
   /**
@@ -37,7 +42,7 @@ export let DATA = {
    * @return {Entity} [Avatar object]
    */
   getAvatar: function() {
-    return this.getEntityFromId(this.avatarId);
+    return this.getEntityFromId(this.state.avatarId);
   },
 
   /**
@@ -53,7 +58,7 @@ export let DATA = {
    * @return {Map} [The map in use]
    */
   currentMap: function() {
-    return this.maps[this.currentMapId];
+    return this.maps[this.state.currentMapId];
   },
 
   /**
@@ -77,21 +82,17 @@ export function handleLoad() {
 
   DATA.clear();
 
-  DATA.level = saved.level;
-  DATA.cameraLocation = saved.cameraLocation;
-  DATA.nextMapId = saved.nextMapId;
-  DATA.currentMapId = saved.currentMapId;
-  DATA.nextEntityId = saved.nextEntityId;
+  DATA.state = saved.state;
 
   for (var mapid in saved.maps) {
     if (!saved.maps.hasOwnProperty(mapid)) continue;
-    DATA[mapid] = mapFactory(saved.maps[mapid]);
+    DATA.state[mapid] = mapFactory(saved.maps[mapid]);
   }
 
   for (var entityId in saved.entities) {
     var entity = EntityFactory.create(saved.entities[entityId].templateName);
     entity.state = saved.entities[entityId].state;
-    DATA.entities[entityId] = entity;
+    DATA.state[entityId] = entity;
 
     //Readd to the map;
     entity.getMap().addEntityAt(entity, entity.getPos());
@@ -100,6 +101,9 @@ export function handleLoad() {
   DATA.game.modes.play.avatarId = saved.avatarId;
 
   DATA.game.modes.play.avatar = DATA.entities[saved.avatarId];
+
+  DATA.dungeon = new Dungeon(0);
+  DATA.dungeon.state = saved.dungeon;
 }
 
 /**

@@ -38,8 +38,8 @@ export class PlayMode extends Mode {
     display.clear();
     d.DATA.currentMap().drawOn(
       display,
-      d.DATA.cameraLocation.x,
-      d.DATA.cameraLocation.y
+      d.DATA.state.cameraLocation.x,
+      d.DATA.state.cameraLocation.y
     );
     //d.DATA.getAvatar()Symbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
   }
@@ -89,7 +89,19 @@ export class PlayMode extends Mode {
           d.DATA.currentMap().getTile(d.DATA.getAvatar().getPos()) ==
           TILES.STAIRS
         ) {
-          this.game.switchModes("win");
+          if (d.DATA.dungeonLevel == d.DATA.dungeon.getSize()) {
+            this.game.switchModes("win");
+          } else {
+            d.DATA.currentMap().removeEntity(d.DATA.getAvatar());
+            d.DATA.state.dungeonLevel++;
+            var map = d.DATA.dungeon.getMap(d.DATA.state.dungeonLevel);
+            d.DATA.state.currentMapId = map.getId();
+            map.addEntityAt(d.DATA.getAvatar(), map.getRandomPointInRoom());
+            d.DATA.state.cameraLocation = d.DATA.getAvatar().getPos();
+            MessageHandler.send(
+              `Advancing to floor ${d.DATA.state.dungeonLevel}`
+            );
+          }
         }
       }
       return true;

@@ -24,7 +24,7 @@ class Map {
   }
 
   isBuilt() {
-    return this.isBuilt;
+    return this.attr.isBuilt;
   }
 
   getWidth() {
@@ -222,7 +222,7 @@ class Map {
 
     this.tg[p.x][p.y] = TILES.STAIRS;
 
-    this.isBuilt = true;
+    this.attr.isBuilt = true;
     ROT.RNG.setState(oldSeed);
   }
 }
@@ -243,7 +243,7 @@ export function mapFactory(mapData) {
     m.setId(mapData.id);
   }
   if (mapData.isBuilt) {
-    m.isBuilt = mapData.isBuilt;
+    m.attr.isBuilt = mapData.isBuilt;
   }
   if (mapData.seed) {
     m.setSeed(mapData.seed);

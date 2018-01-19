@@ -3,7 +3,7 @@
  */
 import * as d from "./data.js";
 import { TILES } from "./tile.js";
-
+import { Game } from "./game.js";
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import ROT from "rot-js";
@@ -254,7 +254,7 @@ export let AvatarMixin = {
   },
   LISTENERS: {
     postMove: function() {
-      d.DATA.cameraLocation = this.getPos();
+      d.DATA.state.cameraLocation = this.getPos();
     }
   }
 };

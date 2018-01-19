@@ -6,6 +6,7 @@ import * as d from "./data.js";
 import { mapFactory } from "./map.js";
 import { EntityFactory } from "./entities.js";
 import { TIMER } from "./timing.js";
+import { Dungeon } from "./dungeon.js";
 
 export let Game = {
   msg: MessageHandler,
@@ -60,9 +61,9 @@ export let Game = {
     this.setupMap();
 
     var avatar = EntityFactory.create("avatar");
-    d.DATA.avatarId = avatar.getId();
+    d.DATA.state.avatarId = avatar.getId();
     d.DATA.currentMap().addEntityAtRandomPos(avatar);
-    d.DATA.cameraLocation = avatar.getPos();
+    d.DATA.state.cameraLocation = avatar.getPos();
 
     this.isPlaying = true;
 
@@ -70,10 +71,10 @@ export let Game = {
   },
 
   setupMap: function() {
-    var map = mapFactory({});
-    map.build();
-    map.populate();
-    d.DATA.currentMapId = map.getId();
+    d.DATA.dungeon = new Dungeon(20);
+    var map = d.DATA.dungeon.getMap(1);
+    d.DATA.dungeonLevel = 1;
+    d.DATA.state.currentMapId = map.getId();
   },
 
   switchModes: function(newModeName) {
