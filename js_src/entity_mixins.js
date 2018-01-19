@@ -4,6 +4,7 @@
 import * as d from "./data.js";
 import { TILES } from "./tile.js";
 import { Game } from "./game.js";
+import { Stats } from "./stats.js";
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import ROT from "rot-js";
@@ -46,7 +47,9 @@ export let MeeleeAttacker = {
       var target = eventData.entity;
       if (this.state.MeeleeAttacker.friendlyTypes.indexOf(target.name) == -1) {
         target.raiseMixinEvent("damagedBy", {
-          damageAmt: this.state.MeeleeAttacker.attack,
+          damageAmt: this.hasOwnProperty("getAttack")
+            ? this.getAttack()
+            : this.state.MeeleeAttacker.attack,
           damageSrc: this
         });
       }
@@ -106,7 +109,10 @@ export let CorporealMover = {
   },
   METHODS: {
     tryMove: function(dx, dy) {
-      var newLoc = { x: this.getPos().x, y: this.getPos().y };
+      var newLoc = {
+        x: this.getPos().x,
+        y: this.getPos().y
+      };
       newLoc.x += dx;
       newLoc.y += dy;
 
@@ -132,14 +138,29 @@ export let CorporealMover = {
 };
 
 export let Wander = {
-  META: { mixinName: "AIWander", mixinGroup: "AI" },
+  META: {
+    mixinName: "AIWander",
+    mixinGroup: "AI"
+  },
   METHODS: {
     act() {
       var moves = [
-        { x: 1, y: 0 },
-        { x: -1, y: 0 },
-        { x: 0, y: 1 },
-        { x: 0, y: -1 }
+        {
+          x: 1,
+          y: 0
+        },
+        {
+          x: -1,
+          y: 0
+        },
+        {
+          x: 0,
+          y: 1
+        },
+        {
+          x: 0,
+          y: -1
+        }
       ];
 
       var move = moves.random();
@@ -148,8 +169,60 @@ export let Wander = {
   }
 };
 
+export let RandomizedStats = {
+  //Two places to initialize: if init happens before or after Stats mixin
+  META: {
+    mixinName: "RandomizedStats",
+    mixinGroup: "stats",
+    initialize: function(template) {
+      this.state.RandomizedStats.statLevel = template.statLevel;
+      if (this.getStats()) {
+        this.getStats().randomize(template.statLevel);
+      }
+    }
+  },
+  LISTENERS: {
+    setStats: function(e) {
+      if (this.state.RandomizedStats.statLevel) {
+        e.o.randomize;
+      }
+    }
+  }
+};
+
+export let StatsMixin = {
+  META: {
+    mixinName: "StatsMixin",
+    mixinGroup: "stats",
+    initialize: function() {
+      this.state.StatsMixin.stats = new Stats();
+      this.raiseMixinEvent("setStats", { o: this.state.StatsMixin.stats });
+    }
+  },
+  METHODS: {
+    getStats: function() {
+      return this.state.StatsMixin.stats;
+    },
+    getSpeed: function() {
+      return 100 - 10 * this.getStats().getModifier("Dex");
+    },
+    getAttack: function() {
+      console.dir(this.getStats());
+      var r = Math.max(
+        this.getStats().getModifier("Str"),
+        this.getStats().getModifier("Dex")
+      );
+      console.log(r);
+      return Math.max(1, r);
+    }
+  }
+};
+
 export let PlayerActor = {
-  META: { mixingName: "PlayerActor", mixinGroup: "AI" },
+  META: {
+    mixinName: "PlayerActor",
+    mixinGroup: "AI"
+  },
   METHODS: {
     act: function() {
       TIMER.engine.lock();
@@ -159,14 +232,29 @@ export let PlayerActor = {
 };
 
 export let WanderAttackNearby = {
-  META: { mixinName: "AIWander", mixinGroup: "AI" },
+  META: {
+    mixinName: "AIWander",
+    mixinGroup: "AI"
+  },
   LISTENERS: {
     act: function() {
       var moves = [
-        { x: 1, y: 0 },
-        { x: -1, y: 0 },
-        { x: 0, y: 1 },
-        { x: 0, y: -1 }
+        {
+          x: 1,
+          y: 0
+        },
+        {
+          x: -1,
+          y: 0
+        },
+        {
+          x: 0,
+          y: 1
+        },
+        {
+          x: 0,
+          y: -1
+        }
       ];
 
       var move = moves.random();
@@ -178,7 +266,10 @@ export let WanderAttackNearby = {
         (Math.abs(xToPlayer) == 1 && yToPlayer == 0) ||
         (Math.abs(yToPlayer) == 1 && xToPlayer == 0)
       ) {
-        move = { x: xToPlayer, y: yToPlayer };
+        move = {
+          x: xToPlayer,
+          y: yToPlayer
+        };
       }
       this.tryMove(move.x, move.y);
     }
@@ -237,8 +328,12 @@ export let HitPoints = {
         damageAmt: evtData.damageAmt
       });
       if (this.state.HitPoints.curHp <= 0) {
-        this.raiseMixinEvent("killed", { entity: evtData.damageSrc });
-        evtData.damageSrc.raiseMixinEvent("kills", { entity: this });
+        this.raiseMixinEvent("killed", {
+          entity: evtData.damageSrc
+        });
+        evtData.damageSrc.raiseMixinEvent("kills", {
+          entity: this
+        });
       }
     },
     killed: function(evtData) {
@@ -263,7 +358,9 @@ export let TimeTracker = {
   META: {
     mixinName: "TimeTracker",
     mixingGroupName: "Tracker",
-    stateModel: { timeTaken: 0 }
+    stateModel: {
+      timeTaken: 0
+    }
   },
   METHODS: {
     getTime: function() {

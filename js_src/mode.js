@@ -6,6 +6,7 @@ import { TILES } from "./tile.js";
 import { EntityFactory } from "./entities.js";
 import { BINDINGS } from "./key.js";
 import { TIMER } from "./timing.js";
+import { STAT_NAMES } from "./stats.js";
 
 class Mode {
   constructor(g) {
@@ -45,12 +46,27 @@ export class PlayMode extends Mode {
   }
   renderAvatar(display) {
     display.drawText(2, 2, "Class: Bard");
-    display.drawText(2, 4, `Time: ${d.DATA.getAvatar().getTime()}`);
+    display.drawText(2, 3, `Time: ${d.DATA.getAvatar().getTime()}`);
     display.drawText(
       2,
-      6,
+      4,
       `HP: ${d.DATA.getAvatar().getCurHp()}/${d.DATA.getAvatar().getMaxHp()}`
     );
+    var stats = d.DATA.getAvatar().getStats();
+    var y = 5;
+
+    for (var i = 0; i < STAT_NAMES.length; i++) {
+      var statName = STAT_NAMES[i];
+      display.drawText(
+        2,
+        5 + i,
+        `${statName}:  ${
+          stats.getStat(statName) < 10 ? "0" : ""
+        }${stats.getStat(statName)} (${
+          stats.getModifier(statName) >= 0 ? "+" : ""
+        }${stats.getModifier(statName)})`
+      );
+    }
   }
 
   handleInput(eventType, e) {

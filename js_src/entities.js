@@ -15,6 +15,8 @@ EntityFactory.learn({
     "TimeTracker",
     "CorporealMover",
     "HitPoints",
+    "StatsMixin",
+    "RandomizedStats",
     "AvatarMixin",
     "MeeleeAttacker",
     "Logger",
@@ -44,6 +46,8 @@ EntityFactory.learn({
     "CorporealMover",
     "WanderAttackNearby",
     "HitPoints",
+    "StatsMixin",
+    "RandomizedStats",
     "MeeleeAttacker"
   ],
   friendlyTypes: ["witch"],
