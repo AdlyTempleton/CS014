@@ -7,6 +7,7 @@ import { Game } from "./game.js";
 import { Stats } from "./stats.js";
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
+import { expForLevel } from "./util.js";
 import ROT from "rot-js";
 
 /**
@@ -207,13 +208,29 @@ export let StatsMixin = {
       return 100 - 10 * this.getStats().getModifier("Dex");
     },
     getAttack: function() {
-      console.dir(this.getStats());
       var r = Math.max(
         this.getStats().getModifier("Str"),
         this.getStats().getModifier("Dex")
       );
-      console.log(r);
       return Math.max(1, r);
+    }
+  }
+};
+
+export let DropsExp = {
+  META: {
+    mixinName: "DropsExp",
+    mixinGroup: "EnemyAttributes",
+    initialize: function(template) {
+      this.state.DropsExp.exp = template.exp || 500;
+    }
+  },
+  LISTENERS: {
+    killed: function(evt) {
+      evt.entity.raiseMixinEvent("gainExp", {
+        entity: this,
+        amt: this.state.DropsExp.exp
+      });
     }
   }
 };
@@ -345,11 +362,22 @@ export let HitPoints = {
 export let AvatarMixin = {
   META: {
     mixinName: "AvatarMisc",
-    mixingGroupName: "Misc"
+    mixingGroupName: "Misc",
+    initialize: function() {
+      this.state.exp = 0;
+      this.state.level = 1;
+    }
   },
   LISTENERS: {
     postMove: function() {
       d.DATA.state.cameraLocation = this.getPos();
+    },
+    //Levelup code
+    gainExp(evt) {
+      this.state.exp += evt.amt;
+      if (this.state.exp >= expForLevel(this.state.level + 1)) {
+        Game.levelUp(this);
+      }
     }
   }
 };

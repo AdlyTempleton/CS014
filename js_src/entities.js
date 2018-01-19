@@ -48,7 +48,8 @@ EntityFactory.learn({
     "HitPoints",
     "StatsMixin",
     "RandomizedStats",
-    "MeeleeAttacker"
+    "MeeleeAttacker",
+    "DropsExp"
   ],
   friendlyTypes: ["witch"],
   maxHp: 4

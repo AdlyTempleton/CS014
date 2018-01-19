@@ -7,6 +7,8 @@ import { EntityFactory } from "./entities.js";
 import { BINDINGS } from "./key.js";
 import { TIMER } from "./timing.js";
 import { STAT_NAMES } from "./stats.js";
+import { expForLevel } from "./util.js";
+import ROT from "rot-js";
 
 class Mode {
   constructor(g) {
@@ -67,6 +69,11 @@ export class PlayMode extends Mode {
         }${stats.getModifier(statName)})`
       );
     }
+
+    var level = d.DATA.getAvatar().state.level;
+    var maxExp = expForLevel(level + 1);
+    display.drawText(2, 11, `EXP: ${d.DATA.getAvatar().state.exp} / ${maxExp}`);
+    display.drawText(2, 12, `Level ${level}`);
   }
 
   handleInput(eventType, e) {
@@ -208,6 +215,53 @@ export class MenuMode extends Mode {
       }
     }
     return false;
+  }
+}
+
+export class LevelMode extends Mode {
+  enter() {
+    super.enter();
+    this.phase = 1;
+    this.statBoostsLeft = 4;
+    this.pickStatOptions();
+  }
+  pickStatOptions() {
+    do {
+      this.statOption1 =
+        STAT_NAMES[ROT.RNG.getUniformInt(0, STAT_NAMES.length - 1)];
+      this.statOption2 =
+        STAT_NAMES[ROT.RNG.getUniformInt(0, STAT_NAMES.length - 1)];
+    } while (this.statOption1 == this.statOption2);
+  }
+  render(display) {
+    display.clear();
+    display.drawText(2, 2, "Select an stat to increase");
+    display.drawText(2, 4, `1: ${this.statOption1}`);
+    display.drawText(2, 5, `2: ${this.statOption2}`);
+    display.drawText(2, 6, `${this.statBoostsLeft} boosts left`);
+  }
+
+  handleInput(eventType, e) {
+    if (eventType == "keypress") {
+      console.log(e.keyCode);
+      if (e.which == 49 || e.which == 50) {
+        var stat = e.keyCode == 49 ? this.statOption1 : this.statOption2;
+        d.DATA.getAvatar()
+          .getStats()
+          .increaseStat(stat);
+        this.statBoostsLeft--;
+        if (this.statBoostsLeft) {
+          this.pickStatOptions();
+        } else {
+          this.game.switchModes("play");
+        }
+        return true;
+      }
+    }
+  }
+
+  renderAvatar(display) {
+    this.game.modes.play.renderAvatar(display);
   }
 }
 

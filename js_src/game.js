@@ -56,6 +56,12 @@ export let Game = {
     this.msg.init(this.getDisplay("log"));
   },
 
+  levelUp: function(avatar) {
+    avatar.state.level += 1;
+    avatar.state.exp -= u.expForLevel(avatar.state.level);
+    this.switchModes("level");
+  },
+
   setupGame: function() {
     console.log("Setting up game");
     this.setupMap();
@@ -96,6 +102,7 @@ export let Game = {
     this.modes.play = new modes.PlayMode(this);
     this.modes.menu = new modes.MenuMode(this);
     this.modes.help = new modes.HelpMode(this);
+    this.modes.level = new modes.LevelMode(this);
   },
 
   bindEvent: function(eventType) {

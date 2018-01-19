@@ -22,4 +22,8 @@ export class Stats {
     var raw = this[statName];
     return Math.floor((raw - 10) / 2);
   }
+
+  increaseStat(statName) {
+    this[statName] += 1;
+  }
 }
