@@ -6,6 +6,10 @@ export function expForLevel(lvl) {
   return 500 * (lvl * lvl) - 500 * lvl;
 }
 
+export function dist(pos1, pos2) {
+  return Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
+}
+
 export function init2DArray(x = 1, y = 1, initVal = "") {
   var a = [];
   for (var xdim = 0; xdim < x; xdim++) {

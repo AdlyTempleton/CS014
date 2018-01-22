@@ -40,6 +40,12 @@ EntityFactory.learn({
 });
 
 EntityFactory.learn({
+  name: "light",
+  symbol: new Symbol("L", "#FFFF33"),
+  mixinNames: ["Overwalkable", "Vanishing"]
+});
+
+EntityFactory.learn({
   name: "rat",
   symbol: new Symbol("R", "#808080"),
   mixinNames: [
@@ -49,7 +55,8 @@ EntityFactory.learn({
     "StatsMixin",
     "RandomizedStats",
     "MeeleeAttacker",
-    "DropsExp"
+    "DropsExp",
+    "FearsLight"
   ],
   friendlyTypes: ["witch"],
   maxHp: 4

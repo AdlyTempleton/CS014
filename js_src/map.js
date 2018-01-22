@@ -68,7 +68,23 @@ class Map {
   }
 
   getEntityObjectAt(pos) {
+    if (this.getEntityAt(pos) == undefined) {
+      return null;
+    }
     return d.DATA.getEntityFromId(this.getEntityAt(pos));
+  }
+
+  getEntitiesOfType(name) {
+    var r = [];
+    var entities = this.getAllEntities();
+
+    for (var i = 0; i < entities.length; i++) {
+      var entity = entities[i];
+      if (entity.getTypeName() == name) {
+        r.push(entity);
+      }
+    }
+    return r;
   }
 
   setEntityAt(entityid, pos) {

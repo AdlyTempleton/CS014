@@ -8,6 +8,7 @@ import { Stats } from "./stats.js";
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import { expForLevel } from "./util.js";
+import { dist } from "./util.js";
 import ROT from "rot-js";
 
 /**
@@ -68,7 +69,7 @@ export let Spawner = {
     }
   },
   LISTENERS: {
-    postMove: function(event) {
+    act: function(event) {
       if (ROT.RNG.getUniformInt(1, this.state.Spawner.spawnFrequency) == 1) {
         var pos = d.DATA.currentMap().getRandomEmptyPointWithinCircle(
           this.getPos(),
@@ -126,12 +127,16 @@ export let CorporealMover = {
           this.raiseMixinEvent("bump", {
             entity: entityAtNewLoc
           });
+
+          var data = { entity: this, canMove: false };
           entityAtNewLoc.raiseMixinEvent("bumped", {
             entity: this
           });
+          if (data.canMove) {
+            this.moveTo(newLoc);
+          }
         } else {
           this.moveTo(newLoc);
-          this.raiseMixinEvent("postMove", {});
         }
       }
     }
@@ -163,6 +168,12 @@ export let Wander = {
           y: -1
         }
       ];
+
+      var data = { cancel: false };
+      this.raiseMixinEvent("movementOverride", data);
+      if (data.cancel) {
+        return;
+      }
 
       var move = moves.random();
       this.tryMove(move.x, move.y);
@@ -276,6 +287,12 @@ export let WanderAttackNearby = {
 
       var move = moves.random();
 
+      var data = { cancel: false };
+      this.raiseMixinEvent("movementOverride", data);
+      if (data.cancel) {
+        return;
+      }
+
       //If the player is nearby, move to them
       var xToPlayer = d.DATA.getAvatar().getPos().x - this.getPos().x;
       var yToPlayer = d.DATA.getAvatar().getPos().y - this.getPos().y;
@@ -354,6 +371,62 @@ export let HitPoints = {
       }
     },
     killed: function(evtData) {
+      this.destroy();
+    }
+  }
+};
+
+export let FearsLight = {
+  META: {
+    mixinName: "FearsLight"
+  },
+  LISTENERS: {
+    movementOverride: function(evtData) {
+      var lights = d.DATA.currentMap().getEntitiesOfType("light");
+
+      for (var i = 0; i < lights.length; i++) {
+        var light = lights[i];
+        if (dist(light.getPos(), this.getPos()) < 8) {
+          var xDiff = this.getPos().x - light.getPos().x;
+          var yDiff = this.getPos().y - light.getPos().y;
+
+          if (Math.abs(xDiff) > Math.abs(yDiff)) {
+            this.tryMove(Math.sign(xDiff), 0);
+          } else {
+            this.tryMove(0, Math.sign(yDiff));
+          }
+
+          evtData.cancel = true;
+        }
+      }
+    }
+  }
+};
+
+export let Vanishing = {
+  META: {
+    mixinName: "Vanishing",
+    initialize: function(template) {
+      this.state.Vanishing.time = template.vanishingTime || 50;
+    }
+  },
+  LISTENERS: {
+    act: function() {
+      this.state.Vanishing.time--;
+      if (this.state.Vanishing.time == 0) {
+        this.destroy();
+      }
+    }
+  }
+};
+
+export let Overwalkable = {
+  META: {
+    mixinName: "Overwalkable"
+  },
+  LISTENERS: {
+    bumped: function(evtData) {
+      evtData.canMove = true;
       this.destroy();
     }
   }

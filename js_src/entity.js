@@ -8,12 +8,17 @@ export class Entity extends Mixable {
   constructor(template) {
     super(template);
     this.template = template;
+    this.state.type = template.name;
     this.symbol = template.symbol || new Symbol(" ");
 
     this.state.pos = { x: 0, y: 0 };
     this.state.id = this.uid();
     this.state.map = "";
     this.state.destroyed = false;
+  }
+
+  getTypeName() {
+    return this.state.type;
   }
 
   uid() {
@@ -79,6 +84,8 @@ export class Entity extends Mixable {
   moveTo(newPos) {
     this.getMap().moveEntityTo(this.getId(), this.getPos(), newPos);
     this.setPos(newPos);
+
+    this.raiseMixinEvent("postMove", {});
   }
 
   move(dx, dy) {

@@ -39,7 +39,11 @@ export class PlayMode extends Mode {
     super.enter();
     TIMER.engine.unlock();
 
-    d.DATA.state.spells = { 1: spells.DEBUG_SPELL };
+    d.DATA.state.spells = {
+      1: spells.DEBUG_SPELL,
+      2: spells.BLINK_SPELL,
+      3: spells.LIGHT_SPELL
+    };
   }
 
   exit() {
@@ -113,6 +117,8 @@ export class PlayMode extends Mode {
         if (d.DATA.state.castTarget != null) {
           MessageHandler.send(`Casting ${d.DATA.state.casting.getName()}`);
 
+          TIMER.engine.unlock();
+
           d.DATA.state.casting.cast(
             d.DATA.getAvatar(),
             d.DATA.state.castTarget
@@ -120,6 +126,8 @@ export class PlayMode extends Mode {
 
           d.DATA.state.casting = {};
           d.DATA.state.castTarget = null;
+
+          return true;
         }
       }
       if (e.which <= 57 && e.which >= 49) {
@@ -136,6 +144,8 @@ export class PlayMode extends Mode {
         } else {
           spell.cast(d.DATA.getAvatar(), null);
           MessageHandler.send(`Casting ${spell.getName()}`);
+
+          TIMER.engine.unlock();
         }
         return true;
       }
@@ -156,10 +166,18 @@ export class PlayMode extends Mode {
 
       if (e.keyCode in moveKeys) {
         if (d.DATA.state.castTarget != null) {
-          d.DATA.state.castTarget = {
+          var spell = d.DATA.state.casting;
+          var newTargetLoc = {
             x: d.DATA.state.castTarget.x + moveKeys[e.keyCode].x,
             y: d.DATA.state.castTarget.y + moveKeys[e.keyCode].y
           };
+          var avatarPos = d.DATA.getAvatar().getPos();
+          var distance =
+            (avatarPos.x - newTargetLoc.x) ** 2 +
+            (avatarPos.y - newTargetLoc.y) ** 2;
+          if (spell.getRadius() == -1 || distance <= spell.getRadius() ** 2) {
+            d.DATA.state.castTarget = newTargetLoc;
+          }
         } else {
           d.DATA.getAvatar().tryMove(
             moveKeys[e.keyCode].x,
