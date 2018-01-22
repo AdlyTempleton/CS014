@@ -23,6 +23,8 @@ export let DATA = {
     this.entities = {};
     this.state.currentMapId = "";
     this.state.avatarId = "";
+    this.state.castTarget = null;
+    this.state.spells = {};
     this.state.dungeonLevel = 1;
 
     this.dungeon = {};

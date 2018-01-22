@@ -8,6 +8,7 @@ import { BINDINGS } from "./key.js";
 import { TIMER } from "./timing.js";
 import { STAT_NAMES } from "./stats.js";
 import { expForLevel } from "./util.js";
+import * as spells from "./spells.js";
 import ROT from "rot-js";
 
 class Mode {
@@ -29,13 +30,21 @@ class Mode {
 }
 
 export class PlayMode extends Mode {
+  constructor(game) {
+    super(game);
+    this.castSymbol = new Symbol("+", "#f00");
+  }
+
   enter() {
     super.enter();
     TIMER.engine.unlock();
+
+    d.DATA.state.spells = { 1: spells.DEBUG_SPELL };
   }
 
   exit() {
     TIMER.engine.lock();
+    d.DATA.state.castTarget = null;
   }
   render(display) {
     display.clear();
@@ -44,6 +53,16 @@ export class PlayMode extends Mode {
       d.DATA.state.cameraLocation.x,
       d.DATA.state.cameraLocation.y
     );
+    if (d.DATA.state.castTarget != null) {
+      let o = display.getOptions();
+      let xStart = d.DATA.state.cameraLocation.x - Math.round(o.width / 2);
+      let yStart = d.DATA.state.cameraLocation.y - Math.round(o.height / 2);
+      this.castSymbol.drawOn(
+        display,
+        d.DATA.state.castTarget.x - xStart,
+        d.DATA.state.castTarget.y - yStart
+      );
+    }
     //d.DATA.getAvatar()Symbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
   }
   renderAvatar(display) {
@@ -80,12 +99,46 @@ export class PlayMode extends Mode {
     if (eventType == "keyup") {
       switch (e.keyCode) {
         case BINDINGS.MENU.id:
-          this.game.switchModes("menu");
+          if (d.DATA.state.castTarget != null) {
+            d.DATA.state.castTarget = null;
+          } else {
+            this.game.switchModes("menu");
+          }
           return true;
       }
     }
 
     if (eventType == "keydown") {
+      if (e.keyCode == BINDINGS.SPELL_CAST.id) {
+        if (d.DATA.state.castTarget != null) {
+          MessageHandler.send(`Casting ${d.DATA.state.casting.getName()}`);
+
+          d.DATA.state.casting.cast(
+            d.DATA.getAvatar(),
+            d.DATA.state.castTarget
+          );
+
+          d.DATA.state.casting = {};
+          d.DATA.state.castTarget = null;
+        }
+      }
+      if (e.which <= 57 && e.which >= 49) {
+        var spell = d.DATA.state.spells[e.which - 48];
+        if (spell.isTargetted()) {
+          MessageHandler.send(`Preparing to cast ${spell.getName()}`);
+          d.DATA.state.casting = spell;
+          d.DATA.state.castTarget = d.DATA.getAvatar().getPos();
+          MessageHandler.send(
+            `Press ${BINDINGS.SPELL_CAST.name} to cast, ${
+              BINDINGS.MENU.name
+            } to cancel`
+          );
+        } else {
+          spell.cast(d.DATA.getAvatar(), null);
+          MessageHandler.send(`Casting ${spell.getName()}`);
+        }
+        return true;
+      }
       if (e.keyCode == BINDINGS.KEY_HELP.id) {
         this.game.switchModes("help");
         return true;
@@ -102,28 +155,36 @@ export class PlayMode extends Mode {
       };
 
       if (e.keyCode in moveKeys) {
-        d.DATA.getAvatar().tryMove(
-          moveKeys[e.keyCode].x,
-          moveKeys[e.keyCode].y
-        );
+        if (d.DATA.state.castTarget != null) {
+          d.DATA.state.castTarget = {
+            x: d.DATA.state.castTarget.x + moveKeys[e.keyCode].x,
+            y: d.DATA.state.castTarget.y + moveKeys[e.keyCode].y
+          };
+        } else {
+          d.DATA.getAvatar().tryMove(
+            moveKeys[e.keyCode].x,
+            moveKeys[e.keyCode].y
+          );
 
-        TIMER.engine.unlock();
-        if (
-          d.DATA.currentMap().getTile(d.DATA.getAvatar().getPos()) ==
-          TILES.STAIRS
-        ) {
-          if (d.DATA.dungeonLevel == d.DATA.dungeon.getSize()) {
-            this.game.switchModes("win");
-          } else {
-            d.DATA.currentMap().removeEntity(d.DATA.getAvatar());
-            d.DATA.state.dungeonLevel++;
-            var map = d.DATA.dungeon.getMap(d.DATA.state.dungeonLevel);
-            d.DATA.state.currentMapId = map.getId();
-            map.addEntityAt(d.DATA.getAvatar(), map.getRandomPointInRoom());
-            d.DATA.state.cameraLocation = d.DATA.getAvatar().getPos();
-            MessageHandler.send(
-              `Advancing to floor ${d.DATA.state.dungeonLevel}`
-            );
+          TIMER.engine.unlock();
+
+          if (
+            d.DATA.currentMap().getTile(d.DATA.getAvatar().getPos()) ==
+            TILES.STAIRS
+          ) {
+            if (d.DATA.dungeonLevel == d.DATA.dungeon.getSize()) {
+              this.game.switchModes("win");
+            } else {
+              d.DATA.currentMap().removeEntity(d.DATA.getAvatar());
+              d.DATA.state.dungeonLevel++;
+              var map = d.DATA.dungeon.getMap(d.DATA.state.dungeonLevel);
+              d.DATA.state.currentMapId = map.getId();
+              map.addEntityAt(d.DATA.getAvatar(), map.getRandomPointInRoom());
+              d.DATA.state.cameraLocation = d.DATA.getAvatar().getPos();
+              MessageHandler.send(
+                `Advancing to floor ${d.DATA.state.dungeonLevel}`
+              );
+            }
           }
         }
       }
@@ -243,7 +304,6 @@ export class LevelMode extends Mode {
 
   handleInput(eventType, e) {
     if (eventType == "keypress") {
-      console.log(e.keyCode);
       if (e.which == 49 || e.which == 50) {
         var stat = e.which == 49 ? this.statOption1 : this.statOption2;
         d.DATA.getAvatar()
