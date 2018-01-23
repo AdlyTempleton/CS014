@@ -45,7 +45,8 @@ export class PlayMode extends Mode {
       3: spells.LIGHT_SPELL,
       4: spells.DAZE_SPELL,
 
-      5: spells.SOUND_SPELL
+      5: spells.SOUND_SPELL,
+      6: spells.FLARE_SPELL
     };
   }
 

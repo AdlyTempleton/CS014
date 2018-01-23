@@ -26,4 +26,12 @@ export class Stats {
   increaseStat(statName) {
     this[statName] += 1;
   }
+
+  increaseStatBy(statName, amt) {
+    this[statName] += amt;
+  }
+
+  decreaseStatBy(statName, amt) {
+    this[statName] -= amt;
+  }
 }

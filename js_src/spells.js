@@ -121,3 +121,27 @@ export let SOUND_SPELL = {
     return true;
   }
 };
+
+export let FLARE_SPELL = {
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "entity";
+  },
+  getName() {
+    return "Flare";
+  },
+  cast(avatar, target) {
+    target.raiseMixinEvent("inflictStatus", {
+      status: status.DAZZLED,
+      duration: 30
+    });
+  },
+  getRadius() {
+    return 10;
+  },
+  isTargetted() {
+    return true;
+  }
+};

@@ -10,11 +10,6 @@ export class Symbol {
   }
 
   drawOn(display, x, y) {
-    if (this.bgColor != "#000") {
-      console.log(this.char);
-      console.log(this.fgColor);
-      console.log(this.bgColor);
-    }
     display.draw(x, y, this.char, this.fgColor, this.bgColor);
   }
 }

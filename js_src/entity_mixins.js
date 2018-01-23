@@ -52,7 +52,7 @@ export let StatusAffected = {
     act: function() {
       TIMER.engine.lock();
       if (this.getStatus() != null) {
-        this.getStatus().act();
+        this.getStatus().act.call(this);
 
         if (--this.state.StatusAffected.duration <= 0) {
           this.getStatus().remove(this);

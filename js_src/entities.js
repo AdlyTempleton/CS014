@@ -76,5 +76,6 @@ EntityFactory.learn({
   ],
   fears: ["light"],
   friendlyTypes: ["witch"],
+  statLevel: 5,
   maxHp: 4
 });
