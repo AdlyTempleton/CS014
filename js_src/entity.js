@@ -55,24 +55,31 @@ export class Entity extends Mixable {
   setName(name) {
     this.name = name;
   }
+
   getPos() {
     return this.state.pos;
   }
+
   setPos(p) {
     this.state.pos = p;
   }
+
   getId() {
     return this.state.id;
   }
+
   setId(id) {
     this.state.id = id;
   }
+
   getMapId() {
     return this.state.map;
   }
+
   setMapId(m) {
     this.state.map = m;
   }
+
   getMap() {
     return d.DATA.maps[this.getMapId()];
   }

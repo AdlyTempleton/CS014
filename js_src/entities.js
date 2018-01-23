@@ -35,7 +35,13 @@ EntityFactory.learn({
 EntityFactory.learn({
   name: "witch",
   symbol: new Symbol("W", "#006400"),
-  mixinNames: ["CorporealMover", "Wander", "HitPoints", "Spawner"],
+  mixinNames: [
+    "CorporealMover",
+    "Wander",
+    "HitPoints",
+    "Spawner",
+    "StatusAffected"
+  ],
   spawnFrequency: 3
 });
 
@@ -56,7 +62,8 @@ EntityFactory.learn({
     "RandomizedStats",
     "MeeleeAttacker",
     "DropsExp",
-    "FearsLight"
+    "FearsLight",
+    "StatusAffected"
   ],
   friendlyTypes: ["witch"],
   maxHp: 4

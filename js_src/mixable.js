@@ -50,6 +50,10 @@ export class Mixable {
       if (m.LISTENERS && m.LISTENERS[evtType]) {
         m.LISTENERS[evtType].call(this, evtData);
       }
+
+      if (m.LISTENERS && m.LISTENERS["general"]) {
+        m.LISTENERS["general"].call(this, evtData, evtType);
+      }
     }
   }
 }

@@ -9,6 +9,7 @@ import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import { expForLevel } from "./util.js";
 import { dist } from "./util.js";
+import { dirToPoint } from "./util.js";
 import ROT from "rot-js";
 
 /**
@@ -32,6 +33,63 @@ let _exampleMixin = {
   },
   LISTENERS: {
     event: function() {}
+  }
+};
+
+export let StatusAffected = {
+  META: {
+    mixinName: "StatusAffected",
+    initialize: function() {
+      this.state.StatusAffected.status = null;
+      this.state.StatusAffected.duration = null;
+    }
+  },
+  METHODS: {
+    getStatus: function() {
+      return this.state.StatusAffected.status;
+    },
+    act: function() {
+      TIMER.engine.lock();
+      if (this.getStatus() != null) {
+        console.dir(this.getStatus());
+        this.getStatus().act();
+
+        if (--this.state.StatusAffected.duration <= 0) {
+          this.state.StatusAffected.status = null;
+        }
+      } else {
+        this.raiseMixinEvent("act", {});
+      }
+      TIMER.engine.unlock();
+    },
+    getSymbol: function() {
+      if (this.getStatus() != null) {
+        var old = this.symbol;
+        return new Symbol(old.chr, old.fgColor, this.getStatus().getColor());
+      } else {
+        return this.symbol;
+      }
+    }
+  },
+  LISTENERS: {
+    general: function(evtData, evtType) {
+      if (
+        this.state.StatusAffected.status &&
+        this.state.StatusAffected.status.LISTENERS[evtType]
+      ) {
+        this.state.StatusAffected.status.LISTENERS[evtType].call(this, evtData);
+      }
+    },
+    inflictStatus: function(evtData) {
+      if (
+        this.getStatus() == null ||
+        this.getStatus().getPriority() > evtData.status.getPriority()
+      ) {
+        console.log("inflicting status");
+        this.state.StatusAffected.status = evtData.status;
+        this.state.StatusAffected.duration = evtData.duration;
+      }
+    }
   }
 };
 
@@ -387,15 +445,8 @@ export let FearsLight = {
       for (var i = 0; i < lights.length; i++) {
         var light = lights[i];
         if (dist(light.getPos(), this.getPos()) < 8) {
-          var xDiff = this.getPos().x - light.getPos().x;
-          var yDiff = this.getPos().y - light.getPos().y;
-
-          if (Math.abs(xDiff) > Math.abs(yDiff)) {
-            this.tryMove(Math.sign(xDiff), 0);
-          } else {
-            this.tryMove(0, Math.sign(yDiff));
-          }
-
+          var dir = dirToPoint(light.getPos(), this.getPos());
+          this.tryMove(dir.x, dir.y);
           evtData.cancel = true;
         }
       }
@@ -439,6 +490,12 @@ export let AvatarMixin = {
     initialize: function() {
       this.state.exp = 0;
       this.state.level = 1;
+    }
+  },
+  METHODS: {
+    destroy: function() {
+      console.log("Losing Game");
+      Game.switchModes("lose");
     }
   },
   LISTENERS: {

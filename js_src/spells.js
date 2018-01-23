@@ -1,5 +1,6 @@
 import * as d from "./data.js";
 import { MessageHandler } from "./msg.js";
+import * as status from "./status.js";
 export let DEBUG_SPELL = {
   isTargetted() {
     return true;
@@ -66,6 +67,30 @@ export let LIGHT_SPELL = {
   },
   getRadius() {
     return 3;
+  },
+  isTargetted() {
+    return true;
+  }
+};
+
+export let DAZE_SPELL = {
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "entity";
+  },
+  getName() {
+    return "Daze";
+  },
+  cast(avatar, target) {
+    target.raiseMixinEvent("inflictStatus", {
+      status: status.DAZED,
+      duration: 5
+    });
+  },
+  getRadius() {
+    return 5;
   },
   isTargetted() {
     return true;

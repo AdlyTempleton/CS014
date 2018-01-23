@@ -42,7 +42,8 @@ export class PlayMode extends Mode {
     d.DATA.state.spells = {
       1: spells.DEBUG_SPELL,
       2: spells.BLINK_SPELL,
-      3: spells.LIGHT_SPELL
+      3: spells.LIGHT_SPELL,
+      4: spells.DAZE_SPELL
     };
   }
 
@@ -117,15 +118,28 @@ export class PlayMode extends Mode {
         if (d.DATA.state.castTarget != null) {
           MessageHandler.send(`Casting ${d.DATA.state.casting.getName()}`);
 
-          TIMER.engine.unlock();
-
-          d.DATA.state.casting.cast(
-            d.DATA.getAvatar(),
-            d.DATA.state.castTarget
-          );
+          if (d.DATA.state.casting.targetType() == "any") {
+            d.DATA.state.casting.cast(
+              d.DATA.getAvatar(),
+              d.DATA.state.castTarget
+            );
+          }
+          if (d.DATA.state.casting.targetType() == "entity") {
+            var entity = d.DATA.currentMap().getEntityObjectAt(
+              d.DATA.state.castTarget
+            );
+            if (entity != null) {
+              d.DATA.state.casting.cast(d.DATA.getAvatar(), entity);
+            } else {
+              MessageHandler.send("Failed to cast spell: no entity target");
+              d.DATA.state.castTarget = null;
+            }
+          }
 
           d.DATA.state.casting = {};
           d.DATA.state.castTarget = null;
+
+          TIMER.engine.unlock();
 
           return true;
         }
