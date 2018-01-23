@@ -145,3 +145,27 @@ export let FLARE_SPELL = {
     return true;
   }
 };
+
+export let LULLABY_SPELL = {
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "entity";
+  },
+  getName() {
+    return "Lullaby";
+  },
+  cast(avatar, target) {
+    target.raiseMixinEvent("inflictStatus", {
+      status: status.DROWZY,
+      duration: 40
+    });
+  },
+  getRadius() {
+    return 5;
+  },
+  isTargetted() {
+    return true;
+  }
+};
