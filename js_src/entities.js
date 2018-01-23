@@ -29,7 +29,8 @@ EntityFactory.learn({
 EntityFactory.learn({
   name: "traveler",
   symbol: new Symbol("T", "#4f4"),
-  mixinNames: ["CorporealMover", "Wander"]
+  mixinNames: ["CorporealMover", "Wander", "Likes"],
+  likes: ["sound"]
 });
 
 EntityFactory.learn({
@@ -40,8 +41,10 @@ EntityFactory.learn({
     "Wander",
     "HitPoints",
     "Spawner",
-    "StatusAffected"
+    "StatusAffected",
+    "Likes"
   ],
+  likes: ["sound"],
   spawnFrequency: 3
 });
 
@@ -49,6 +52,12 @@ EntityFactory.learn({
   name: "light",
   symbol: new Symbol("L", "#FFFF33"),
   mixinNames: ["Overwalkable", "Vanishing"]
+});
+
+EntityFactory.learn({
+  name: "sound",
+  symbol: new Symbol("S", "#FFFF33"),
+  mixinNames: ["Overwalkable"]
 });
 
 EntityFactory.learn({
@@ -62,9 +71,10 @@ EntityFactory.learn({
     "RandomizedStats",
     "MeeleeAttacker",
     "DropsExp",
-    "FearsLight",
+    "Fears",
     "StatusAffected"
   ],
+  fears: ["light"],
   friendlyTypes: ["witch"],
   maxHp: 4
 });

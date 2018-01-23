@@ -85,7 +85,7 @@ export class Entity extends Mixable {
   }
 
   render(display, x, y) {
-    this.symbol.drawOn(display, x, y);
+    this.getSymbol().drawOn(display, x, y);
   }
 
   moveTo(newPos) {

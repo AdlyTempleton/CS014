@@ -96,3 +96,28 @@ export let DAZE_SPELL = {
     return true;
   }
 };
+
+export let SOUND_SPELL = {
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "any";
+  },
+  getName() {
+    return "Ghost Sound";
+  },
+  cast(avatar, target) {
+    if (d.DATA.currentMap().getEntityAt(target) == undefined) {
+      d.DATA.currentMap().spawnEntityAt("sound", target);
+    } else {
+      MessageHandler.send("Failed to cast because an entity was in the way");
+    }
+  },
+  getRadius() {
+    return 8;
+  },
+  isTargetted() {
+    return true;
+  }
+};

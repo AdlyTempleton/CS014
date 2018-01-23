@@ -7,6 +7,7 @@ import { Game } from "./game.js";
 import { Stats } from "./stats.js";
 import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
+import { Symbol } from "./symbol.js";
 import { expForLevel } from "./util.js";
 import { dist } from "./util.js";
 import { dirToPoint } from "./util.js";
@@ -51,10 +52,10 @@ export let StatusAffected = {
     act: function() {
       TIMER.engine.lock();
       if (this.getStatus() != null) {
-        console.dir(this.getStatus());
         this.getStatus().act();
 
         if (--this.state.StatusAffected.duration <= 0) {
+          this.getStatus().remove(this);
           this.state.StatusAffected.status = null;
         }
       } else {
@@ -65,7 +66,7 @@ export let StatusAffected = {
     getSymbol: function() {
       if (this.getStatus() != null) {
         var old = this.symbol;
-        return new Symbol(old.chr, old.fgColor, this.getStatus().getColor());
+        return new Symbol(old.char, old.fgColor, this.getStatus().getColor());
       } else {
         return this.symbol;
       }
@@ -85,9 +86,14 @@ export let StatusAffected = {
         this.getStatus() == null ||
         this.getStatus().getPriority() > evtData.status.getPriority()
       ) {
-        console.log("inflicting status");
+        if (this.getStatus() != null) {
+          this.getStatus().remove(this);
+        }
+
         this.state.StatusAffected.status = evtData.status;
         this.state.StatusAffected.duration = evtData.duration;
+
+        this.getStatus().inflict(this);
       }
     }
   }
@@ -206,8 +212,8 @@ export let Wander = {
     mixinName: "AIWander",
     mixinGroup: "AI"
   },
-  METHODS: {
-    act() {
+  LISTENERS: {
+    act: function() {
       var moves = [
         {
           x: 1,
@@ -228,6 +234,7 @@ export let Wander = {
       ];
 
       var data = { cancel: false };
+
       this.raiseMixinEvent("movementOverride", data);
       if (data.cancel) {
         return;
@@ -401,7 +408,6 @@ export let HitPoints = {
       this.state.HitPoints.curHp -= dHp;
     },
     setMaxHp: function(newMaxHp) {
-      console.log("Setting max hp");
       this.state.HitPoints.maxHp = newMaxHp;
     },
     getCurHp: function() {
@@ -434,18 +440,54 @@ export let HitPoints = {
   }
 };
 
-export let FearsLight = {
+export let Fears = {
   META: {
-    mixinName: "FearsLight"
+    mixinName: "Fears",
+    initialize: function(template) {
+      this.state.Fears.fears = template.fears || ["light"];
+    }
   },
   LISTENERS: {
     movementOverride: function(evtData) {
-      var lights = d.DATA.currentMap().getEntitiesOfType("light");
+      var targets = [];
+      for (var i = 0; i < this.state.Fears.fears.length; i++) {
+        targets = targets.concat(
+          d.DATA.currentMap().getEntitiesOfType(this.state.Fears.fears[i])
+        );
+      }
 
-      for (var i = 0; i < lights.length; i++) {
-        var light = lights[i];
-        if (dist(light.getPos(), this.getPos()) < 8) {
-          var dir = dirToPoint(light.getPos(), this.getPos());
+      for (var i = 0; i < targets.length; i++) {
+        var target = targets[i];
+        if (dist(target.getPos(), this.getPos()) < 8) {
+          var dir = dirToPoint(target.getPos(), this.getPos());
+          this.tryMove(dir.x, dir.y);
+          evtData.cancel = true;
+        }
+      }
+    }
+  }
+};
+
+export let Likes = {
+  META: {
+    mixinName: "Likes",
+    initialize: function(template) {
+      this.state.Likes.likes = template.likes || ["sound"];
+    }
+  },
+  LISTENERS: {
+    movementOverride: function(evtData) {
+      var targets = [];
+
+      for (var i = 0; i < this.state.Likes.likes.length; i++) {
+        targets = targets.concat(
+          d.DATA.currentMap().getEntitiesOfType(this.state.Likes.likes[i])
+        );
+      }
+      for (var i = 0; i < targets.length; i++) {
+        var target = targets[i];
+        if (dist(target.getPos(), this.getPos()) < 15) {
+          var dir = dirToPoint(this.getPos(), target.getPos());
           this.tryMove(dir.x, dir.y);
           evtData.cancel = true;
         }
@@ -494,7 +536,6 @@ export let AvatarMixin = {
   },
   METHODS: {
     destroy: function() {
-      console.log("Losing Game");
       Game.switchModes("lose");
     }
   },

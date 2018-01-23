@@ -7,6 +7,6 @@ export let DAZED = {
   },
   LISTENERS: {},
   act() {},
-  inflict() {},
-  remove() {}
+  inflict(target) {},
+  remove(target) {}
 };

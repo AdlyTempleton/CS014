@@ -43,7 +43,9 @@ export class PlayMode extends Mode {
       1: spells.DEBUG_SPELL,
       2: spells.BLINK_SPELL,
       3: spells.LIGHT_SPELL,
-      4: spells.DAZE_SPELL
+      4: spells.DAZE_SPELL,
+
+      5: spells.SOUND_SPELL
     };
   }
 
@@ -71,6 +73,7 @@ export class PlayMode extends Mode {
     //d.DATA.getAvatar()Symbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
   }
   renderAvatar(display) {
+    display.clear();
     display.drawText(2, 2, "Class: Bard");
     display.drawText(2, 3, `Time: ${d.DATA.getAvatar().getTime()}`);
     display.drawText(
