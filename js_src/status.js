@@ -1,3 +1,6 @@
+import { dirToPoint } from "./util.js";
+
+import * as d from "./data.js";
 export let DAZED = {
   getColor() {
     return "#D3D3D3";
@@ -57,4 +60,39 @@ export let DROWZY = {
       target.getStats().increaseStatBy("Wis", 10);
     }
   }
+};
+
+export let FEAR = {
+  getColor() {
+    return "#800000";
+  },
+  getPriority() {
+    return 3;
+  },
+  LISTENERS: {
+    bump: function(evt) {
+      if (evt.entity.getTypeName() == this.getTypeName()) {
+        evt.entity.raiseMixinEvent("inflictStatus", {
+          status: FEAR,
+          duration: 20
+        });
+      }
+    },
+    bumped: function(evt) {
+      console.dir(evt.entity);
+      if (evt.entity.getTypeName() == this.getTypeName()) {
+        evt.entity.raiseMixinEvent("inflictStatus", {
+          status: FEAR,
+          duration: 20
+        });
+      }
+    }
+  },
+  act() {
+    //Based on entityMixin fear code
+    var dir = dirToPoint(d.DATA.getAvatar().getPos(), this.getPos());
+    this.tryMove(dir.x, dir.y);
+  },
+  inflict(target) {},
+  remove(target) {}
 };

@@ -169,3 +169,81 @@ export let LULLABY_SPELL = {
     return true;
   }
 };
+
+export let FEAR_SPELL = {
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "entity";
+  },
+  getName() {
+    return "Fear";
+  },
+  cast(avatar, target) {
+    target.raiseMixinEvent("inflictStatus", {
+      status: status.FEAR,
+      duration: 20
+    });
+  },
+  getRadius() {
+    return 3;
+  },
+  isTargetted() {
+    return true;
+  }
+};
+
+export let HEAL_LIGHT_SPELL = {
+  isTargetted() {
+    return false;
+  },
+  targetType() {
+    return "none";
+  },
+  getName() {
+    return "Heal Light Wounds";
+  },
+  cast(avatar, target) {
+    avatar.gainHp(3);
+  },
+  getRadius() {
+    return -1;
+  }
+};
+
+export let HEAL_MODERATE_SPELL = {
+  isTargetted() {
+    return false;
+  },
+  targetType() {
+    return "none";
+  },
+  getName() {
+    return "Heal Moderate Wounds";
+  },
+  cast(avatar, target) {
+    avatar.gainHp(7);
+  },
+  getRadius() {
+    return -1;
+  }
+};
+
+export let HEAL_CRITICAL_SPELL = {
+  isTargetted() {
+    return false;
+  },
+  targetType() {
+    return "none";
+  },
+  getName() {
+    return "Heal Critical Wounds";
+  },
+  cast(avatar, target) {
+    avatar.gainHp(15);
+  },
+  getRadius() {
+    return -1;
+  }
+};

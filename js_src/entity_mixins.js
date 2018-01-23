@@ -267,6 +267,59 @@ export let RandomizedStats = {
   }
 };
 
+export let Buffable = {
+  META: {
+    mixinName: "Buffable",
+    initialize: function() {
+      this.state.Buffable.buffs = [];
+    }
+  },
+  METHODS: {
+    //Returns the mapping of buffs and durations
+    getBuffsData: function() {
+      return this.state.Buffable.buffs;
+    },
+    //Returns a simple list of buffs
+    getBuffs: function() {
+      var buffData = getBuffsData();
+      var r = [];
+      for (var i = 0; i < buffData.length; i++) {
+        r.push(buffData[i]["buff"]);
+      }
+      return r;
+    }
+  },
+  LISTENERS: {
+    addBuff: function(buff, duration) {
+      buff.add.call(this);
+      this.getBuffsData().push({ buff: buff, duration: duration });
+    },
+    act: function() {
+      var buffData = getBuffsData();
+      var newBuffData = [];
+      for (var i = 0; i < buffData.length; i++) {
+        var buff = buffData[i];
+        //Remove buffs while iterating by filtering into new list
+        if (--buff["duration"] > 0) {
+          newBuffData.push(buff);
+        } else {
+          buff["buff"].remove.call(this);
+        }
+      }
+      this.state.Buffable.buffs = newBuffData;
+    },
+    general: function(evtData, evtType) {
+      var buffs = getBuffs();
+      for (var i = 0; i < buffs.length; i++) {
+        var buff = buffs[i];
+        if (buff.LISTENERS && buff.LISTENERS[evtType]) {
+          buff.LISTENERS[evtType].call(this, evtData);
+        }
+      }
+    }
+  }
+};
+
 export let StatsMixin = {
   META: {
     mixinName: "StatsMixin",
