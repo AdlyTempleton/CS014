@@ -1,6 +1,20 @@
 import * as d from "./data.js";
 import { MessageHandler } from "./msg.js";
 import * as status from "./status.js";
+export function getAllSpells() {
+  return [
+    BLINK_SPELL,
+    LIGHT_SPELL,
+    SOUND_SPELL,
+    DAZE_SPELL,
+    FLARE_SPELL,
+    LULLABY_SPELL,
+    FEAR_SPELL,
+    HEAL_LIGHT_SPELL,
+    HEAL_MODERATE_SPELL,
+    HEAL_CRITICAL_SPELL
+  ];
+}
 export let DEBUG_SPELL = {
   isTargetted() {
     return true;

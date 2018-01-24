@@ -6,10 +6,11 @@ import { TILES } from "./tile.js";
 import { EntityFactory } from "./entities.js";
 import { BINDINGS } from "./key.js";
 import { TIMER } from "./timing.js";
-import { STAT_NAMES } from "./stats.js";
 import { expForLevel } from "./util.js";
-import * as spells from "./spells.js";
+import { getAllSpells } from "./spells.js";
 import ROT from "rot-js";
+
+import { STAT_NAMES } from "./stats.js";
 
 class Mode {
   constructor(g) {
@@ -25,8 +26,6 @@ class Mode {
   handleInput(eventType, e) {}
 
   render(display) {}
-
-  renderAvatar(display) {}
 }
 
 export class PlayMode extends Mode {
@@ -38,18 +37,6 @@ export class PlayMode extends Mode {
   enter() {
     super.enter();
     TIMER.engine.unlock();
-
-    d.DATA.state.spells = {
-      1: spells.DEBUG_SPELL,
-      2: spells.BLINK_SPELL,
-      3: spells.LIGHT_SPELL,
-      4: spells.DAZE_SPELL,
-
-      5: spells.SOUND_SPELL,
-      6: spells.FLARE_SPELL,
-      7: spells.LULLABY_SPELL,
-      8: spells.FEAR_SPELL
-    };
   }
 
   exit() {
@@ -74,36 +61,6 @@ export class PlayMode extends Mode {
       );
     }
     //d.DATA.getAvatar()Symbol.drawOn(display, Math.round(display.getOptions().width / 2), Math.round(display.getOptions().height / 2));
-  }
-  renderAvatar(display) {
-    display.clear();
-    display.drawText(2, 2, "Class: Bard");
-    display.drawText(2, 3, `Time: ${d.DATA.getAvatar().getTime()}`);
-    display.drawText(
-      2,
-      4,
-      `HP: ${d.DATA.getAvatar().getCurHp()}/${d.DATA.getAvatar().getMaxHp()}`
-    );
-    var stats = d.DATA.getAvatar().getStats();
-    var y = 5;
-
-    for (var i = 0; i < STAT_NAMES.length; i++) {
-      var statName = STAT_NAMES[i];
-      display.drawText(
-        2,
-        5 + i,
-        `${statName}:  ${
-          stats.getStat(statName) < 10 ? "0" : ""
-        }${stats.getStat(statName)} (${
-          stats.getModifier(statName) >= 0 ? "+" : ""
-        }${stats.getModifier(statName)})`
-      );
-    }
-
-    var level = d.DATA.getAvatar().state.level;
-    var maxExp = expForLevel(level + 1);
-    display.drawText(2, 11, `EXP: ${d.DATA.getAvatar().state.exp} / ${maxExp}`);
-    display.drawText(2, 12, `Level ${level}`);
   }
 
   handleInput(eventType, e) {
@@ -353,6 +310,46 @@ export class LevelMode extends Mode {
         } else {
           this.game.switchModes("play");
         }
+        return true;
+      }
+    }
+  }
+
+  renderAvatar(display) {
+    this.game.modes.play.renderAvatar(display);
+  }
+}
+
+export class SpellMode extends Mode {
+  enter() {
+    super.enter();
+    do {
+      this.spell = getAllSpells()[
+        ROT.RNG.getUniformInt(0, getAllSpells().length - 1)
+      ];
+
+      //Repeat until we find a spell we do not own
+    } while (Object.values(d.DATA.state.spells).indexOf(this.spell) != -1);
+  }
+  render(display) {
+    display.clear();
+    display.drawText(2, 2, "You have Found a spell");
+    display.drawText(2, 4, this.spell.getName());
+    display.drawText(2, 5, `Choose the slot to place the spell in`);
+    display.drawText(2, 6, `Or press 'D' to discard`);
+  }
+
+  handleInput(eventType, e) {
+    if (eventType == "keypress") {
+      if (e.which >= 49 && e.which <= 57) {
+        var slot = e.which - 48;
+        d.DATA.state.spells[slot] = this.spell;
+        d.DATA.state.spellCharges[slot] = 3;
+        this.game.switchModes("play");
+        return true;
+      } else if (e.which == 68) {
+        console.log("hello");
+        this.game.switchModes("play");
         return true;
       }
     }

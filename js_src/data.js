@@ -26,6 +26,17 @@ export let DATA = {
     this.state.castTarget = null;
     this.state.spells = {};
     this.state.dungeonLevel = 1;
+    this.state.spellCharges = {
+      1: 3,
+      2: 3,
+      3: 3,
+      4: 4,
+      5: 3,
+      6: 3,
+      7: 3,
+      8: 3,
+      9: 3
+    };
 
     this.dungeon = {};
   },
@@ -37,6 +48,20 @@ export let DATA = {
    */
   getEntityFromId: function(eid) {
     return this.entities[eid];
+  },
+
+  clearSpellCharges: function() {
+    this.state.spellCharges = {
+      1: 3,
+      2: 3,
+      3: 3,
+      4: 4,
+      5: 3,
+      6: 3,
+      7: 3,
+      8: 3,
+      9: 3
+    };
   },
 
   /**

@@ -6,6 +6,9 @@ import * as d from "./data.js";
 import { mapFactory } from "./map.js";
 import { EntityFactory } from "./entities.js";
 import { TIMER } from "./timing.js";
+
+import { STAT_NAMES } from "./stats.js";
+import { expForLevel } from "./util.js";
 import { Dungeon } from "./dungeon.js";
 
 export let Game = {
@@ -27,6 +30,11 @@ export let Game = {
     log: {
       w: 100,
       h: 6,
+      o: null
+    },
+    spell: {
+      w: 20,
+      h: 29,
       o: null
     }
   },
@@ -84,6 +92,8 @@ export let Game = {
   },
 
   switchModes: function(newModeName) {
+    console.log(newModeName);
+    console.trace();
     if (this.curMode) {
       this.curMode.exit(this);
     }
@@ -103,6 +113,7 @@ export let Game = {
     this.modes.menu = new modes.MenuMode(this);
     this.modes.help = new modes.HelpMode(this);
     this.modes.level = new modes.LevelMode(this);
+    this.modes.spell = new modes.SpellMode(this);
   },
 
   bindEvent: function(eventType) {
@@ -127,10 +138,57 @@ export let Game = {
     this.renderMain();
     this.renderAvatar(this.getDisplay("avatar"));
     this.renderLog(this.getDisplay("log"));
+    this.renderSpell(this.getDisplay("spell"));
   },
 
-  renderAvatar: function(display) {
-    this.curMode.renderAvatar(display);
+  renderAvatar(display) {
+    display.clear();
+    if (d.DATA.getAvatar() == undefined) {
+      return;
+    }
+    display.drawText(2, 2, "Class: Bard");
+    display.drawText(2, 3, `Time: ${d.DATA.getAvatar().getTime()}`);
+    display.drawText(
+      2,
+      4,
+      `HP: ${d.DATA.getAvatar().getCurHp()}/${d.DATA.getAvatar().getMaxHp()}`
+    );
+    var stats = d.DATA.getAvatar().getStats();
+    var y = 5;
+
+    for (var i = 0; i < STAT_NAMES.length; i++) {
+      var statName = STAT_NAMES[i];
+      display.drawText(
+        2,
+        5 + i,
+        `${statName}:  ${
+          stats.getStat(statName) < 10 ? "0" : ""
+        }${stats.getStat(statName)} (${
+          stats.getModifier(statName) >= 0 ? "+" : ""
+        }${stats.getModifier(statName)})`
+      );
+    }
+
+    var level = d.DATA.getAvatar().state.level;
+    var maxExp = expForLevel(level + 1);
+    display.drawText(2, 11, `EXP: ${d.DATA.getAvatar().state.exp} / ${maxExp}`);
+    display.drawText(2, 12, `Level ${level}`);
+  },
+
+  renderSpell: function(display) {
+    display.drawText(2, 2, "Spells:");
+    for (var i = 1; i <= 9; i++) {
+      if (d.DATA.state.spells[i] == undefined) {
+        display.drawText(2, 2 + 2 * i, `{Spell ${i}: EMPTY}`);
+      } else {
+        display.drawText(
+          2,
+          2 + 2 * i,
+          `Spell ${i}: (${d.DATA.state.spellCharges[i]} / 3)`
+        );
+        display.drawText(2, 3 + 2 * i, d.DATA.state.spells[i].getName());
+      }
+    }
   },
 
   renderLog: function(display) {

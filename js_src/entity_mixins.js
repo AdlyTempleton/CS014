@@ -37,6 +37,18 @@ let _exampleMixin = {
   }
 };
 
+export let Spellbook = {
+  META: { mixinName: "Spellbook" },
+  LISTENERS: {
+    bumped: function(evtData) {
+      if (evtData.entity == d.DATA.getAvatar()) {
+        Game.switchModes("spell");
+        this.destroy();
+      }
+    }
+  }
+};
+
 export let StatusAffected = {
   META: {
     mixinName: "StatusAffected",

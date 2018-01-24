@@ -61,6 +61,12 @@ EntityFactory.learn({
 });
 
 EntityFactory.learn({
+  name: "spellbook",
+  symbol: new Symbol("B", "#6495ed"),
+  mixinNames: ["Spellbook"]
+});
+
+EntityFactory.learn({
   name: "rat",
   symbol: new Symbol("R", "#808080"),
   mixinNames: [

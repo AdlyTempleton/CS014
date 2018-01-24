@@ -1,6 +1,6 @@
-import 'babel-polyfill';
-import ROT from 'rot-js';
-import {Game} from './game.js';
+import "babel-polyfill";
+import ROT from "rot-js";
+import { Game } from "./game.js";
 
 window.onload = function() {
   // Check if rot.js can work on this browser
@@ -12,9 +12,18 @@ window.onload = function() {
   Game.init();
 
   // Add the containers to our HTML page
-  document.getElementById('main-display').appendChild(Game.getDisplay('main').getContainer());
-  document.getElementById('log-display').appendChild(Game.getDisplay('log').getContainer());
-  document.getElementById('avatar-display').appendChild(Game.getDisplay('avatar').getContainer());
+  document
+    .getElementById("main-display")
+    .appendChild(Game.getDisplay("main").getContainer());
+  document
+    .getElementById("log-display")
+    .appendChild(Game.getDisplay("log").getContainer());
+  document
+    .getElementById("avatar-display")
+    .appendChild(Game.getDisplay("avatar").getContainer());
+  document
+    .getElementById("spell-display")
+    .appendChild(Game.getDisplay("spell").getContainer());
 
   Game.render();
 

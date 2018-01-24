@@ -205,15 +205,21 @@ class Map {
   }
 
   populate() {
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 50; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("traveler"));
     }
 
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 120; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("rat"));
     }
 
-    this.addEntityAtRandomPos(EntityFactory.create("witch"));
+    for (var i = 0; i < 15; i++) {
+      this.addEntityAtRandomPos(EntityFactory.create("witch"));
+    }
+
+    for (var i = 0; i < 100; i++) {
+      this.addEntityAtRandomPos(EntityFactory.create("spellbook"));
+    }
   }
 
   build() {
@@ -244,7 +250,7 @@ class Map {
 }
 
 export function mapFactory(mapData) {
-  let m = new Map(50, 50);
+  let m = new Map(250, 250);
 
   if (mapData.w) {
     m.setWidth(mapData.w);
