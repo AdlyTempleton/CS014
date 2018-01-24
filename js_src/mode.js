@@ -1,4 +1,5 @@
 import Game from "./util.js";
+import { tryMusic } from "./skills.js";
 import * as d from "./data.js";
 import { MessageHandler } from "./msg.js";
 import { Symbol } from "./symbol.js";
@@ -147,6 +148,13 @@ export class PlayMode extends Mode {
             BINDINGS.MENU.name
           } to cancel`
         );
+      }
+      if (
+        e.keyCode == BINDINGS.MUSIC.id &&
+        d.DATA.getPlayerSkill("music") > 0
+      ) {
+        tryMusic(d.DATA.getAvatar());
+        MessageHandler.send("Playing Music");
       }
       if (e.keyCode == BINDINGS.KEY_HELP.id) {
         this.game.switchModes("help");

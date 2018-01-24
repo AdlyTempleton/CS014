@@ -92,8 +92,6 @@ export let Game = {
   },
 
   switchModes: function(newModeName) {
-    console.log(newModeName);
-    console.trace();
     if (this.curMode) {
       this.curMode.exit(this);
     }

@@ -3,6 +3,7 @@ import { TILES } from "./tile.js";
 import * as d from "./data.js";
 import { TIMER } from "./timing.js";
 import { EntityFactory } from "./entities.js";
+import { dist } from "./util.js";
 import { Game } from "./game.js";
 import { init2DArray, randomString } from "./util.js";
 
@@ -85,6 +86,21 @@ class Map {
       }
     }
 
+    return r;
+  }
+
+  getEntitiesWithinExcluding(centerEntity, radius) {
+    var r = [];
+    var entities = this.getAllEntities();
+    for (var i = 0; i < entities.length; i++) {
+      var entity = entities[i];
+      if (
+        entity != centerEntity &&
+        dist(centerEntity.getPos(), entity.getPos()) < radius
+      ) {
+        r.push(entity);
+      }
+    }
     return r;
   }
 

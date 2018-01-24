@@ -14,13 +14,15 @@ EntityFactory.learn({
   mixinNames: [
     "TimeTracker",
     "CorporealMover",
-    "HitPoints",
-    "StatsMixin",
     "RandomizedStats",
     "AvatarMixin",
     "MeeleeAttacker",
     "Logger",
-    "PlayerActor"
+    "PlayerActor",
+
+    "HitPoints",
+
+    "StatsMixin"
   ],
   meeleeAttack: 2,
   maxHp: 20
@@ -39,10 +41,11 @@ EntityFactory.learn({
   mixinNames: [
     "CorporealMover",
     "Wander",
-    "HitPoints",
+
     "Spawner",
     "StatusAffected",
-    "Likes"
+    "Likes",
+    "HitPoints"
   ],
   likes: ["sound"],
   spawnFrequency: 3
@@ -72,13 +75,13 @@ EntityFactory.learn({
   mixinNames: [
     "CorporealMover",
     "WanderAttackNearby",
-    "HitPoints",
     "StatsMixin",
     "RandomizedStats",
     "MeeleeAttacker",
     "DropsExp",
     "Fears",
-    "StatusAffected"
+    "StatusAffected",
+    "HitPoints"
   ],
   fears: ["light"],
   friendlyTypes: ["witch"],

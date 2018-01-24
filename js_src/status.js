@@ -38,6 +38,24 @@ export let DAZZLED = {
   }
 };
 
+export let SLEEP = {
+  getColor() {
+    return "#000080";
+  },
+  getPriority() {
+    return 2;
+  },
+  LISTENERS: {
+    damagedBy: function(evtData) {
+      evtData.amt *= 5;
+      this.state.StatusAffected = null;
+    }
+  },
+  act() {},
+  inflict(target) {},
+  remove(target) {}
+};
+
 export let DROWZY = {
   getColor() {
     return "#00FFFF";

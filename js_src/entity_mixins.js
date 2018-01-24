@@ -537,11 +537,24 @@ export let HitPoints = {
         this.state.HitPoints.maxHp
       );
     },
-    loseHp: function(dHp) {
+    loseHp: function(dHp, src = null) {
       if (dHp < 0) {
         return;
       }
       this.state.HitPoints.curHp -= dHp;
+
+      if (this.state.HitPoints.curHp <= 0) {
+        this.raiseMixinEvent("killed", {
+          entity: src
+        });
+        if (src != null) {
+          src.raiseMixinEvent("kills", {
+            entity: this
+          });
+        }
+      }
+
+      return true;
     },
     setMaxHp: function(newMaxHp) {
       this.state.HitPoints.maxHp = newMaxHp;
@@ -556,19 +569,11 @@ export let HitPoints = {
   LISTENERS: {
     damagedBy: function(evtData) {
       // handler for 'eventLabel' events
-      this.loseHp(evtData.damageAmt);
+      this.loseHp(evtData.damageAmt, evtData.damageSrc);
       evtData.damageSrc.raiseMixinEvent("damages", {
         entity: this,
         damageAmt: evtData.damageAmt
       });
-      if (this.state.HitPoints.curHp <= 0) {
-        this.raiseMixinEvent("killed", {
-          entity: evtData.damageSrc
-        });
-        evtData.damageSrc.raiseMixinEvent("kills", {
-          entity: this
-        });
-      }
     },
     killed: function(evtData) {
       this.destroy();
