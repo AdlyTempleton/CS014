@@ -194,26 +194,66 @@ export let CorporealMover = {
       newLoc.x += dx;
       newLoc.y += dy;
 
-      if (d.DATA.currentMap().isTilePassable(newLoc)) {
-        var entityAtNewLoc = d.DATA.getEntityFromId(
-          d.DATA.currentMap().getEntityAt(newLoc)
-        );
+      var entityAtNewLoc = d.DATA.getEntityFromId(
+        d.DATA.currentMap().getEntityAt(newLoc)
+      );
 
-        if (entityAtNewLoc) {
-          this.raiseMixinEvent("bump", {
-            entity: entityAtNewLoc
-          });
+      if (entityAtNewLoc) {
+        this.raiseMixinEvent("bump", {
+          entity: entityAtNewLoc
+        });
 
-          var data = { entity: this, canMove: false };
-          entityAtNewLoc.raiseMixinEvent("bumped", {
-            entity: this
-          });
-          if (data.canMove) {
+        var data = { entity: this, canMove: false };
+        entityAtNewLoc.raiseMixinEvent("bumped", {
+          entity: this
+        });
+        if (data.canMove) {
+          if (d.DATA.currentMap().isTilePassable(newLoc)) {
             this.moveTo(newLoc);
           }
-        } else {
+        }
+      } else {
+        if (d.DATA.currentMap().isTilePassable(newLoc)) {
           this.moveTo(newLoc);
         }
+      }
+    }
+  }
+};
+
+export let EthrealMover = {
+  META: {
+    mixinName: "EthrealMover",
+    mixingGroupName: "Mover",
+    stateModel: {}
+  },
+  METHODS: {
+    tryMove: function(dx, dy) {
+      var newLoc = {
+        x: this.getPos().x,
+        y: this.getPos().y
+      };
+      newLoc.x += dx;
+      newLoc.y += dy;
+
+      var entityAtNewLoc = d.DATA.getEntityFromId(
+        d.DATA.currentMap().getEntityAt(newLoc)
+      );
+
+      if (entityAtNewLoc) {
+        this.raiseMixinEvent("bump", {
+          entity: entityAtNewLoc
+        });
+
+        var data = { entity: this, canMove: false };
+        entityAtNewLoc.raiseMixinEvent("bumped", {
+          entity: this
+        });
+        if (data.canMove) {
+          this.moveTo(newLoc);
+        }
+      } else {
+        this.moveTo(newLoc);
       }
     }
   }
