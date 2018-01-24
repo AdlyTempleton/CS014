@@ -1,23 +1,24 @@
-
-import * as d from './data.js'
-export class Factory{
-  constructor(classType, dataName){
+import * as d from "./data.js";
+export class Factory {
+  constructor(classType, dataName) {
     this.classType = classType;
     this.dataName = dataName;
     this.templates = {};
   }
 
-  learn(template){
+  learn(template) {
     //template.name is default for template.templateName
-    this.templates[template.templateName ? template.templateName : template.name] = template;
+    this.templates[
+      template.templateName ? template.templateName : template.name
+    ] = template;
   }
 
-  create(templateName){
+  create(templateName, id = null) {
     let product = new this.classType(this.templates[templateName]);
+    if (id != null) {
+      product.setId(id);
+    }
     d.DATA[this.dataName][product.getId()] = product;
     return product;
   }
-
-
-
 }

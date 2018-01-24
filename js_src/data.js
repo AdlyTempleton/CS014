@@ -8,6 +8,7 @@ import { Entity } from "./entity.js";
 import { EntityFactory } from "./entities.js";
 import { Game } from "./game.js";
 import { Dungeon } from "./dungeon.js";
+import { getSpellMap } from "./spells.js";
 export let DATA = {
   /**
    * Resets/initializes stored values
@@ -39,6 +40,22 @@ export let DATA = {
     };
 
     this.dungeon = {};
+  },
+
+  getPlayerSkill(skillName) {
+    return this.getAvatar().state.skills[skillName];
+  },
+
+  getPlayerStat(statName) {
+    return this.getAvatar()
+      .getStats()
+      .getStat(statName);
+  },
+
+  getPlayerStatModifier(statName) {
+    return this.getAvatar()
+      .getStats()
+      .getModifier(statName);
   },
 
   /**
@@ -96,6 +113,13 @@ export let DATA = {
       return;
     }
 
+    //Pack spell list
+    this.spells = {};
+    for (var i = 1; i <= 9; i++) {
+      this.spells[i] =
+        this.state.spells[i] != undefined ? this.state.spells[i].getName() : "";
+    }
+
     window.localStorage.setItem(Game.SAVE_LOCATION, JSON.stringify(this));
   }
 };
@@ -117,17 +141,24 @@ export function handleLoad() {
   }
 
   for (var entityId in saved.entities) {
-    var entity = EntityFactory.create(saved.entities[entityId].templateName);
+    var entity = EntityFactory.create(
+      saved.entities[entityId].templateName,
+      saved.entities[entityId].state.id
+    );
+
     entity.state = saved.entities[entityId].state;
-    DATA.state[entityId] = entity;
 
     //Readd to the map;
     entity.getMap().addEntityAt(entity, entity.getPos());
   }
 
-  DATA.game.modes.play.avatarId = saved.avatarId;
-
-  DATA.game.modes.play.avatar = DATA.entities[saved.avatarId];
+  //Load spells
+  //L
+  DATA.state.spells = {};
+  var spellMap = getSpellMap();
+  for (var i = 1; i <= 9; i++) {
+    DATA.state.spells[i] = spellMap[saved.spells[i]];
+  }
 
   DATA.dungeon = new Dungeon(0);
   DATA.dungeon.state = saved.dungeon;

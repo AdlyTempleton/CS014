@@ -9,6 +9,7 @@ import { TIMER } from "./timing.js";
 import { MessageHandler } from "./msg.js";
 import { Symbol } from "./symbol.js";
 import { expForLevel } from "./util.js";
+import { CLONE } from "./stats.js";
 import { dist } from "./util.js";
 import { dirToPoint } from "./util.js";
 import ROT from "rot-js";
@@ -372,6 +373,33 @@ export let Buffable = {
   }
 };
 
+export let Pickpocketable = {
+  META: {
+    mixinName: "Pickpocketable",
+    mixinGroup: "pickpocket",
+    initialize: function(template) {
+      this.state.Pickpocketable.pickpocketItemChance =
+        template.pickpocketItemChance || 9;
+      this.state.Pickpocketable.hasItem =
+        ROT.RNG.getUniformInt(0, 10) <
+        this.state.Pickpocketable.pickpocketItemChance;
+      this.state.Pickpocketable.pickpocketDefense =
+        template.pickpocketDefense || 3;
+    }
+  },
+  METHODS: {
+    isPickpocketable: function() {
+      return true;
+    },
+    hasPickpocketItem() {
+      return this.state.Pickpocketable.hasItem;
+    },
+    getPickpocketDefense() {
+      return this.state.Pickpocketable.pickpocketDefense;
+    }
+  }
+};
+
 export let StatsMixin = {
   META: {
     mixinName: "StatsMixin",
@@ -383,6 +411,9 @@ export let StatsMixin = {
   },
   METHODS: {
     getStats: function() {
+      if (!this.state.StatsMixin.hasOwnProperty("getStat")) {
+        this.state.StatsMixin.stats = CLONE(this.state.StatsMixin.stats);
+      }
       return this.state.StatsMixin.stats;
     },
     getSpeed: function() {
@@ -591,7 +622,7 @@ export let Likes = {
       }
       for (var i = 0; i < targets.length; i++) {
         var target = targets[i];
-        if (dist(target.getPos(), this.getPos()) < 15) {
+        if (target != this && dist(target.getPos(), this.getPos()) < 15) {
           var dir = dirToPoint(this.getPos(), target.getPos());
           this.tryMove(dir.x, dir.y);
           evtData.cancel = true;
@@ -637,6 +668,7 @@ export let AvatarMixin = {
     initialize: function() {
       this.state.exp = 0;
       this.state.level = 1;
+      this.state.skills = { pickpocket: 0, fencing: 0, music: 0 };
     }
   },
   METHODS: {

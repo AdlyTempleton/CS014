@@ -35,3 +35,13 @@ export class Stats {
     this[statName] -= amt;
   }
 }
+
+export function CLONE(old) {
+  var r = new Stats();
+
+  for (var i = 0; i < STAT_NAMES.length; i++) {
+    var stat = STAT_NAMES[i];
+    r[stat] = old[stat];
+  }
+  return r;
+}

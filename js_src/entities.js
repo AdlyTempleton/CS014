@@ -29,7 +29,7 @@ EntityFactory.learn({
 EntityFactory.learn({
   name: "traveler",
   symbol: new Symbol("T", "#4f4"),
-  mixinNames: ["CorporealMover", "Wander", "Likes"],
+  mixinNames: ["CorporealMover", "Wander", "Likes", "Pickpocketable"],
   likes: ["sound"]
 });
 

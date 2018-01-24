@@ -1,6 +1,7 @@
 import * as d from "./data.js";
 import { MessageHandler } from "./msg.js";
 import * as status from "./status.js";
+import * as skills from "./skills.js";
 export function getAllSpells() {
   return [
     BLINK_SPELL,
@@ -14,6 +15,16 @@ export function getAllSpells() {
     HEAL_MODERATE_SPELL,
     HEAL_CRITICAL_SPELL
   ];
+}
+
+export function getSpellMap() {
+  var r = {};
+  var spells = getAllSpells();
+  for (var i = 0; i < spells.length; i++) {
+    var spell = spells[i];
+    r[spell.getName()] = spell;
+  }
+  return r;
 }
 export let DEBUG_SPELL = {
   isTargetted() {
@@ -30,6 +41,30 @@ export let DEBUG_SPELL = {
   },
   cast(avatar, target) {
     console.log(target);
+  },
+  isTargetted() {
+    return true;
+  }
+};
+
+export let PICKPOCKET_SPELL_DUMMY = {
+  isSkill() {
+    return true;
+  },
+  isTargetted() {
+    return true;
+  },
+  targetType() {
+    return "entity";
+  },
+  getName() {
+    return "Pickpocket";
+  },
+  cast(avatar, target) {
+    skills.tryPickpocket(avatar, target);
+  },
+  getRadius() {
+    return 1;
   },
   isTargetted() {
     return true;

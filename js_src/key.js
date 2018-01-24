@@ -9,5 +9,7 @@ export let BINDINGS = {
   LOAD_GAME: { id: 76, name: "L", desc: "Load Game" },
   START_GAME: { id: 13, name: "ENTER", desc: "Start Game" },
   KEY_HELP: { id: 9, name: "TAB", desc: "Shortcuts" },
-  SPELL_CAST: { id: 13, name: "ENTER", desc: "Cast spell after targetting" }
+  SPELL_CAST: { id: 13, name: "ENTER", desc: "Cast spell after targetting" },
+  PICKPOCKET: { id: 80, name: "P", desc: "Pickpocket entity" },
+  MUSIC: { id: 77, name: "M", desc: "Play Music" }
 };

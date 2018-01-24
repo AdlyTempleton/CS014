@@ -169,6 +169,14 @@ export let Game = {
       );
     }
 
+    display.drawText(
+      2,
+      13,
+      `Pickpocketing: ${d.DATA.getPlayerSkill("pickpocket")}`
+    );
+    display.drawText(2, 14, `Fencing: ${d.DATA.getPlayerSkill("fencing")}`);
+    display.drawText(2, 15, `Music: ${d.DATA.getPlayerSkill("music")}`);
+
     var level = d.DATA.getAvatar().state.level;
     var maxExp = expForLevel(level + 1);
     display.drawText(2, 11, `EXP: ${d.DATA.getAvatar().state.exp} / ${maxExp}`);

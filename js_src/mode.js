@@ -8,6 +8,7 @@ import { BINDINGS } from "./key.js";
 import { TIMER } from "./timing.js";
 import { expForLevel } from "./util.js";
 import { getAllSpells } from "./spells.js";
+import { PICKPOCKET_SPELL_DUMMY } from "./spells.js";
 import ROT from "rot-js";
 
 import { STAT_NAMES } from "./stats.js";
@@ -108,7 +109,15 @@ export class PlayMode extends Mode {
         }
       }
       if (e.which <= 57 && e.which >= 49) {
-        var spell = d.DATA.state.spells[e.which - 48];
+        var num = e.which - 48;
+        var spell = d.DATA.state.spells[num];
+        if (d.DATA.state.spellCharges[num] <= 0) {
+          MessageHandler.send("Not enough charges left");
+          return true;
+        } else {
+          d.DATA.state.spellCharges[num]--;
+        }
+
         if (spell.isTargetted()) {
           MessageHandler.send(`Preparing to cast ${spell.getName()}`);
           d.DATA.state.casting = spell;
@@ -125,6 +134,19 @@ export class PlayMode extends Mode {
           TIMER.engine.unlock();
         }
         return true;
+      }
+      if (
+        e.keyCode == BINDINGS.PICKPOCKET.id &&
+        d.DATA.getPlayerSkill("pickpocket") > 0
+      ) {
+        MessageHandler.send(`Preparing to pickpocket`);
+        d.DATA.state.casting = PICKPOCKET_SPELL_DUMMY;
+        d.DATA.state.castTarget = d.DATA.getAvatar().getPos();
+        MessageHandler.send(
+          `Press ${BINDINGS.SPELL_CAST.name} to pickpocket, ${
+            BINDINGS.MENU.name
+          } to cancel`
+        );
       }
       if (e.keyCode == BINDINGS.KEY_HELP.id) {
         this.game.switchModes("help");
@@ -291,26 +313,44 @@ export class LevelMode extends Mode {
   }
   render(display) {
     display.clear();
-    display.drawText(2, 2, "Select an stat to increase");
-    display.drawText(2, 4, `1: ${this.statOption1}`);
-    display.drawText(2, 5, `2: ${this.statOption2}`);
-    display.drawText(2, 6, `${this.statBoostsLeft} boosts left`);
+
+    if (this.phase == 1) {
+      display.drawText(2, 2, "Select an stat to increase");
+      display.drawText(2, 4, `1: ${this.statOption1}`);
+      display.drawText(2, 5, `2: ${this.statOption2}`);
+      display.drawText(2, 6, `${this.statBoostsLeft} boosts left`);
+    } else {
+      display.drawText(2, 2, "Select an skill to increase");
+
+      display.drawText(2, 4, `1: Pickpocketing`);
+      display.drawText(2, 5, `2: Fencing`);
+      display.drawText(2, 6, `3: Music`);
+    }
   }
 
   handleInput(eventType, e) {
     if (eventType == "keypress") {
-      if (e.which == 49 || e.which == 50) {
-        var stat = e.which == 49 ? this.statOption1 : this.statOption2;
-        d.DATA.getAvatar()
-          .getStats()
-          .increaseStat(stat);
-        this.statBoostsLeft--;
-        if (this.statBoostsLeft) {
-          this.pickStatOptions();
-        } else {
+      if (this.phase == 1) {
+        if (e.which == 49 || e.which == 50) {
+          var stat = e.which == 49 ? this.statOption1 : this.statOption2;
+          d.DATA.getAvatar()
+            .getStats()
+            .increaseStat(stat);
+          this.statBoostsLeft--;
+          if (this.statBoostsLeft) {
+            this.pickStatOptions();
+          } else {
+            this.phase = 2;
+          }
+          return true;
+        }
+      } else if (this.phase == 2) {
+        if (e.which == 49 || e.which == 50 || e.which == 51) {
+          var keyMap = { 49: "pickpocket", 50: "fencing", 51: "music" };
+          var skillName = keyMap[e.which];
+          d.DATA.getAvatar().state.skills[skillName]++;
           this.game.switchModes("play");
         }
-        return true;
       }
     }
   }
@@ -348,7 +388,6 @@ export class SpellMode extends Mode {
         this.game.switchModes("play");
         return true;
       } else if (e.which == 68) {
-        console.log("hello");
         this.game.switchModes("play");
         return true;
       }

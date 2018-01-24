@@ -21,6 +21,10 @@ export class Entity extends Mixable {
     return this.state.type;
   }
 
+  isPickpocketable() {
+    return false;
+  }
+
   uid() {
     return "entity: " + randomString() + d.DATA.nextEntityId++;
   }

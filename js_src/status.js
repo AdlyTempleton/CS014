@@ -1,4 +1,5 @@
 import { dirToPoint } from "./util.js";
+import { MessageHandler } from "./msg.js";
 
 import * as d from "./data.js";
 export let DAZED = {
@@ -79,7 +80,6 @@ export let FEAR = {
       }
     },
     bumped: function(evt) {
-      console.dir(evt.entity);
       if (evt.entity.getTypeName() == this.getTypeName()) {
         evt.entity.raiseMixinEvent("inflictStatus", {
           status: FEAR,
