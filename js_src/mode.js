@@ -182,6 +182,7 @@ export class PlayMode extends Mode {
           var distance =
             (avatarPos.x - newTargetLoc.x) ** 2 +
             (avatarPos.y - newTargetLoc.y) ** 2;
+          var modifiedRadius = d.DATA.state.casting == PICKPOCKET_SPELL_DUMMY;
           if (spell.getRadius() == -1 || distance <= spell.getRadius() ** 2) {
             d.DATA.state.castTarget = newTargetLoc;
           }
@@ -209,6 +210,9 @@ export class PlayMode extends Mode {
               MessageHandler.send(
                 `Advancing to floor ${d.DATA.state.dungeonLevel}`
               );
+              d.DATA.getAvatar().raiseMixinEvent("gainExp", {
+                amt: 500 * d.DATA.dungeonLevel
+              });
             }
           }
         }

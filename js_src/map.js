@@ -222,11 +222,11 @@ class Map {
   }
 
   populate() {
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 25; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("traveler"));
     }
 
-    for (var i = 0; i < 120; i++) {
+    for (var i = 0; i < 70; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("rat"));
     }
 
@@ -234,7 +234,7 @@ class Map {
       this.addEntityAtRandomPos(EntityFactory.create("witch"));
     }
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 4; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("spellbook"));
     }
   }
@@ -267,7 +267,7 @@ class Map {
 }
 
 export function mapFactory(mapData) {
-  let m = new Map(250, 250);
+  let m = new Map(150, 150);
 
   if (mapData.w) {
     m.setWidth(mapData.w);

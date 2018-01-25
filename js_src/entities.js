@@ -14,15 +14,14 @@ EntityFactory.learn({
   mixinNames: [
     "TimeTracker",
     "CorporealMover",
-    "RandomizedStats",
     "AvatarMixin",
     "MeeleeAttacker",
     "Logger",
     "PlayerActor",
 
-    "HitPoints",
+    "StatsMixin",
 
-    "StatsMixin"
+    "HitPoints"
   ],
   meeleeAttack: 2,
   maxHp: 20

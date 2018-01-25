@@ -411,6 +411,10 @@ export let StatsMixin = {
   },
   METHODS: {
     getStats: function() {
+      //Check to avoid cloning undefined during initialization
+      if (this.state.StatsMixin.stats == undefined) {
+        return undefined;
+      }
       if (!this.state.StatsMixin.hasOwnProperty("getStat")) {
         this.state.StatsMixin.stats = CLONE(this.state.StatsMixin.stats);
       }
@@ -420,10 +424,16 @@ export let StatsMixin = {
       return 100 - 10 * this.getStats().getModifier("Dex");
     },
     getAttack: function() {
-      var r = Math.max(
-        this.getStats().getModifier("Str"),
-        this.getStats().getModifier("Dex")
-      );
+      var r = this.getStats().getModifier("Str");
+
+      //Fencing
+      if (this.isAvatar() && d.DATA.getPlayerSkill("fencing") > 0) {
+        r +=
+          d.DATA.getPlayerSkill("fencing") +
+          this.getStats().getModifier("Dex") **
+            (1 + 0.2 * d.DATA.getPlayerSkill("fencing"));
+      }
+
       return Math.max(1, r);
     }
   }
@@ -438,6 +448,12 @@ export let DropsExp = {
     }
   },
   LISTENERS: {
+    modifyDamage: function(evt) {
+      evt.amt = Math.max(1, evt.amt - this.getStats().getModifier("Con"));
+    },
+    bonusMaxHealth: function(evt) {
+      evt.amt += 5 * this.getStats().getModifier("Con");
+    },
     killed: function(evt) {
       evt.entity.raiseMixinEvent("gainExp", {
         entity: this,
@@ -569,10 +585,12 @@ export let HitPoints = {
   LISTENERS: {
     damagedBy: function(evtData) {
       // handler for 'eventLabel' events
-      this.loseHp(evtData.damageAmt, evtData.damageSrc);
+      var data = { amt: evtData.damageAmt };
+      this.raiseMixinEvent("modifyDamage", data);
+      this.loseHp(data.amt, evtData.damageSrc);
       evtData.damageSrc.raiseMixinEvent("damages", {
         entity: this,
-        damageAmt: evtData.damageAmt
+        damageAmt: data.amt
       });
     },
     killed: function(evtData) {
@@ -690,6 +708,21 @@ export let AvatarMixin = {
       this.state.exp += evt.amt;
       if (this.state.exp >= expForLevel(this.state.level + 1)) {
         Game.levelUp(this);
+      }
+    },
+    modifyDamage(evt) {
+      //Fencing
+      if (this.isAvatar() && d.DATA.getPlayerSkill("fencing") > 0) {
+        var mod = Math.min(
+          15,
+          d.DATA.getPlayerSkill("fencing") +
+            this.getStats().getModifier("Dex") **
+              (1 + 0.2 * d.DATA.getPlayerSkill("fencing"))
+        );
+        if (ROT.RNG.getUniformInt(0, 20) < mod) {
+          MessageHandler.send("Parried attack using fencing");
+          evt.amt = 0;
+        }
       }
     }
   }

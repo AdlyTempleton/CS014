@@ -21,6 +21,10 @@ export class Entity extends Mixable {
     return this.state.type;
   }
 
+  isAvatar() {
+    return this == d.DATA.getAvatar();
+  }
+
   isPickpocketable() {
     return false;
   }
