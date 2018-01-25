@@ -135,7 +135,7 @@ export let DAZE_SPELL = {
   cast(avatar, target) {
     target.raiseMixinEvent("inflictStatus", {
       status: status.DAZED,
-      duration: 5
+      duration: 5 + 2 * d.DATA.getPlayerStatModifier("Wis")
     });
   },
   getRadius() {
@@ -184,7 +184,7 @@ export let FLARE_SPELL = {
   cast(avatar, target) {
     target.raiseMixinEvent("inflictStatus", {
       status: status.DAZZLED,
-      duration: 30
+      duration: 30 + 10 * d.DATA.getPlayerStatModifier("Wis")
     });
   },
   getRadius() {
@@ -208,7 +208,7 @@ export let LULLABY_SPELL = {
   cast(avatar, target) {
     target.raiseMixinEvent("inflictStatus", {
       status: status.DROWZY,
-      duration: 40
+      duration: 40 + 20 * d.DATA.getPlayerStatModifier("Wis")
     });
   },
   getRadius() {
@@ -232,7 +232,7 @@ export let FEAR_SPELL = {
   cast(avatar, target) {
     target.raiseMixinEvent("inflictStatus", {
       status: status.FEAR,
-      duration: 20
+      duration: 20 + 5 * d.DATA.getPlayerStatModifier("Wis")
     });
   },
   getRadius() {

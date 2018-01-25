@@ -182,8 +182,11 @@ export class PlayMode extends Mode {
           var distance =
             (avatarPos.x - newTargetLoc.x) ** 2 +
             (avatarPos.y - newTargetLoc.y) ** 2;
-          var modifiedRadius = d.DATA.state.casting == PICKPOCKET_SPELL_DUMMY;
-          if (spell.getRadius() == -1 || distance <= spell.getRadius() ** 2) {
+          var modifiedRadius =
+            d.DATA.state.casting == PICKPOCKET_SPELL_DUMMY
+              ? spell.getRadius()
+              : spell.getRadius() + d.DATA.getPlayerStatModifier("Wis");
+          if (spell.getRadius() == -1 || distance <= modifiedRadius ** 2) {
             d.DATA.state.castTarget = newTargetLoc;
           }
         } else {
