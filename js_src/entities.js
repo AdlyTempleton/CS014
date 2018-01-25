@@ -87,3 +87,25 @@ EntityFactory.learn({
   statLevel: 5,
   maxHp: 4
 });
+
+EntityFactory.learn({
+  name: "guard",
+  symbol: new Symbol("G", "#808080"),
+  mixinNames: [
+    "CorporealMover",
+    "AttackNearby",
+    "MeeleeAttacker",
+    "DropsExp",
+    "Pickpocketable",
+    "Spawner",
+    "DropsExp",
+    "StatusAffected",
+    "HitPoints"
+  ],
+  likes: ["light", "sound"],
+  friendlyTypes: ["guard"],
+  spawnFrequency: 500,
+  spawnType: "guard",
+  maxHp: 5,
+  attack: 5
+});

@@ -221,7 +221,7 @@ class Map {
     return position;
   }
 
-  populate() {
+  populate(n) {
     for (var i = 0; i < 25; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("traveler"));
     }
@@ -236,6 +236,12 @@ class Map {
 
     for (var i = 0; i < 4; i++) {
       this.addEntityAtRandomPos(EntityFactory.create("spellbook"));
+    }
+
+    if (n >= 0) {
+      for (var i = 0; i < 15; i++) {
+        this.addEntityAtRandomPos(EntityFactory.create("guard"));
+      }
     }
   }
 

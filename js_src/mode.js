@@ -112,6 +112,9 @@ export class PlayMode extends Mode {
       if (e.which <= 57 && e.which >= 49) {
         var num = e.which - 48;
         var spell = d.DATA.state.spells[num];
+        if (spell == undefined) {
+          return false;
+        }
         if (d.DATA.state.spellCharges[num] <= 0) {
           MessageHandler.send("Not enough charges left");
           return true;

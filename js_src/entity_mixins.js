@@ -431,10 +431,19 @@ export let StatsMixin = {
         r +=
           d.DATA.getPlayerSkill("fencing") +
           this.getStats().getModifier("Dex") **
-            (1 + 0.2 * d.DATA.getPlayerSkill("fencing"));
+            (0.5 + 0.5 * d.DATA.getPlayerSkill("fencing"));
       }
+      r = Math.round(r);
 
       return Math.max(1, r);
+    }
+  },
+  LISTENERS: {
+    modifyDamage: function(evt) {
+      evt.amt = Math.max(1, evt.amt - this.getStats().getModifier("Con"));
+    },
+    bonusMaxHealth: function(evt) {
+      evt.amt += 5 * this.getStats().getModifier("Con");
     }
   }
 };
@@ -448,12 +457,6 @@ export let DropsExp = {
     }
   },
   LISTENERS: {
-    modifyDamage: function(evt) {
-      evt.amt = Math.max(1, evt.amt - this.getStats().getModifier("Con"));
-    },
-    bonusMaxHealth: function(evt) {
-      evt.amt += 5 * this.getStats().getModifier("Con");
-    },
     killed: function(evt) {
       evt.entity.raiseMixinEvent("gainExp", {
         entity: this,
@@ -523,6 +526,32 @@ export let WanderAttackNearby = {
         };
       }
       this.tryMove(move.x, move.y);
+    }
+  }
+};
+
+export let AttackNearby = {
+  META: {
+    mixinName: "AIAttackNearby",
+    mixinGroup: "AI"
+  },
+  LISTENERS: {
+    act: function() {
+      var data = { cancel: false };
+      this.raiseMixinEvent("movementOverride", data);
+      if (data.cancel) {
+        return;
+      }
+
+      //If the player is nearby, move to them
+      var xToPlayer = d.DATA.getAvatar().getPos().x - this.getPos().x;
+      var yToPlayer = d.DATA.getAvatar().getPos().y - this.getPos().y;
+      if (
+        (Math.abs(xToPlayer) == 1 && yToPlayer == 0) ||
+        (Math.abs(yToPlayer) == 1 && xToPlayer == 0)
+      ) {
+        this.tryMove(xToPlayer, yToPlayer);
+      }
     }
   }
 };
